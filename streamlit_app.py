@@ -14,7 +14,7 @@ def load_data(file_path):
     return None
 
 # File path (update if necessary)
-file_path = "data/Provider_Duplicates_Variations_Active.xlsx"
+file_path = "Provider_Duplicates_Variations_Active.xlsx"
 df = load_data(file_path)
 
 # Ensure the file is loaded
@@ -47,6 +47,7 @@ languages = {
         "does_not_exist": "❌ Name Does Not Exist in the database.",
         "variations_found": "🟡 Unique Variations Found:",
         "status_not_sure": "❓ Status: Not Sure",
+        "help_text": "Enter the exact name (case-sensitive, no extra spaces)",
     },
     "Español": {
         "title": "🔎 Búsqueda de Nombres con Variaciones",
@@ -59,6 +60,7 @@ languages = {
         "does_not_exist": "❌ El nombre no existe en la base de datos.",
         "variations_found": "🟡 Variaciones Únicas Encontradas:",
         "status_not_sure": "❓ Estado: No Seguro",
+        "help_text": "Ingrese el nombre exacto (distingue mayúsculas y espacios)",
     },
 }
 
@@ -71,7 +73,7 @@ st.markdown(f"<h1 style='text-align: center;'>{lang['title']}</h1>", unsafe_allo
 input_name = st.text_input(
     lang["input_label"], 
     "", 
-    help="Enter the exact name (case-sensitive, no extra spaces)", 
+    help=lang["help_text"],  # Dynamic tooltip translation
     placeholder="E.g., John A. Doe"
 ).strip()
 find_button = st.button(lang["button_label"])
@@ -91,8 +93,8 @@ if find_button and input_name:
     if input_name not in st.session_state["search_history"]:
         st.session_state["search_history"].append(input_name)
 
-    # Check for exact matches
-    exact_matches = df[df["Name"] == input_name]  # Strict case-sensitive match
+    # Check for exact matches (Case-sensitive, space-sensitive)
+    exact_matches = df[df["Name"] == input_name]  
 
     if not exact_matches.empty:
         st.success(f"{lang['exact_match']}:")
