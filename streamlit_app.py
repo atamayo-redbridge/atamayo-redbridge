@@ -22,7 +22,7 @@ h1 {
     margin-bottom: 20px;
 }
 
-/* 🔹 Search Bar (Reverted to Previous Version) */
+/* 🔹 Search Bar Styling */
 .stTextInput>div>div>input {
     background-color: #FFFFFF !important; /* White background */
     color: #000000 !important; /* Black text */
@@ -30,6 +30,12 @@ h1 {
     border: 1px solid #B22222; /* Red border */
     padding: 10px;
     font-size: 16px;
+}
+
+/* 🔹 Darken the Placeholder Text */
+.stTextInput>div>div>input::placeholder {
+    color: #555555 !important; /* Dark gray placeholder text */
+    opacity: 1;
 }
 
 /* 🔹 Sidebar Styling */
@@ -45,7 +51,7 @@ h1 {
     font-weight: bold;
 }
 
-/* 🔹 Buttons Styling (Reverted) */
+/* 🔹 Buttons Styling */
 .stButton>button {
     border-radius: 5px;
     font-size: 16px;
@@ -55,12 +61,12 @@ h1 {
     border: none;
 }
 
-/* 🔹 Button Hover Effects (Reverted) */
+/* 🔹 Button Hover Effects */
 .stButton>button:hover {
     background-color: #8B1A1A !important;
 }
 
-/* 🔹 Download Button (Reverted) */
+/* 🔹 Download Button */
 .stDownloadButton>button {
     border-radius: 5px;
     font-size: 16px;
