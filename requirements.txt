@@ -1,2 +1,5 @@
 streamlit
 pandas
+fuzzywuzzy
+openpyxl
+python-levenshtein
