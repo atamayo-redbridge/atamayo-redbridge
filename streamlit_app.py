@@ -76,28 +76,28 @@ h1 {
 }
 
 /* ✅ Success Message (Green Background, Black Text) */
-div[data-testid="stNotification-success"], div[data-testid="stAlert-success"] {
+div[data-testid="stNotification-success"], div[data-testid="stAlert-success"], div[role="alert"][class*="stSuccess"] {
     background-color: #D4EDDA !important; /* Light green */
     border-left: 5px solid #155724 !important;
-    color: #000000 !important;
+    color: #000000 !important; /* Black text */
     font-weight: bold;
     padding: 10px;
 }
 
 /* ⚠️ Warning Message (Yellow Background, Black Text) */
-div[data-testid="stNotification-warning"], div[data-testid="stAlert-warning"] {
+div[data-testid="stNotification-warning"], div[data-testid="stAlert-warning"], div[role="alert"][class*="stWarning"] {
     background-color: #FFF3CD !important; /* Light yellow */
     border-left: 5px solid #856404 !important;
-    color: #000000 !important;
+    color: #000000 !important; /* Black text */
     font-weight: bold;
     padding: 10px;
 }
 
 /* ❌ Error Message (Red Background, Black Text) */
-div[data-testid="stNotification-error"], div[data-testid="stAlert-error"] {
+div[data-testid="stNotification-error"], div[data-testid="stAlert-error"], div[role="alert"][class*="stError"] {
     background-color: #F8D7DA !important; /* Light red */
     border-left: 5px solid #721C24 !important;
-    color: #000000 !important;
+    color: #000000 !important; /* Black text */
     font-weight: bold;
     padding: 10px;
 }
