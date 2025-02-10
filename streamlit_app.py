@@ -35,6 +35,10 @@ if missing_columns:
     st.error(f"❌ Missing columns in Excel file: {', '.join(missing_columns)} / Faltan columnas en el archivo de Excel: {', '.join(missing_columns)}")
     st.stop()
 
+# Move Language Selection to the Top-Right Corner
+st.sidebar.title("🌍 Language / Idioma")
+selected_language = st.sidebar.radio("", ["English", "Español"])
+
 # Language options
 languages = {
     "English": {
@@ -44,10 +48,8 @@ languages = {
         "exact_match": "✅ Exact Matches Found",
         "not_found": "⚠️ No Exact Match, but Similar Names Found:",
         "does_not_exist": "❌ Name Does Not Exist in the database.",
-        "variations_found": "🟡 Possible Variations Found:",
+        "variations_found": "🟡 Unique Variations Found:",
         "status_not_sure": "❓ Status: Not Sure",
-        "upload_label": "Upload the Excel file",
-        "language_label": "Select Language:",
     },
     "Español": {
         "title": "🔎 Búsqueda de Nombres con Variaciones",
@@ -56,18 +58,15 @@ languages = {
         "exact_match": "✅ Coincidencias Exactas Encontradas",
         "not_found": "⚠️ No hay coincidencia exacta, pero encontramos nombres similares:",
         "does_not_exist": "❌ El nombre no existe en la base de datos.",
-        "variations_found": "🟡 Posibles Variaciones Encontradas:",
+        "variations_found": "🟡 Variaciones Únicas Encontradas:",
         "status_not_sure": "❓ Estado: No Seguro",
-        "upload_label": "Cargar archivo Excel",
-        "language_label": "Seleccionar idioma:",
     },
 }
 
-# Select Language
-selected_language = st.selectbox("🌍 Select Language / Seleccionar idioma:", list(languages.keys()))
 lang = languages[selected_language]
 
-st.title(lang["title"])
+# Title
+st.markdown(f"<h1 style='text-align: center;'>{lang['title']}</h1>", unsafe_allow_html=True)
 
 # User Input + Find Button
 input_name = st.text_input(lang["input_label"], "").strip()
@@ -80,40 +79,54 @@ if find_button and input_name:
 
     if not exact_matches.empty:
         st.success(f"{lang['exact_match']}:")
+        unique_variations = set()  # Store unique variations
+
         for _, row in exact_matches.iterrows():
             st.write(f"🔹 **{row['Name']}** (ID: {row['ID']})")
-            
-            # Show variations if they exist
+
+            # Collect unique variations for this specific ID
             variations = row[["Variation 1", "Variation 2", "Variation 3", "Variation 4", "Variation 5"]].dropna().tolist()
-            if variations:
-                st.info(lang["variations_found"])
-                for var in variations:
-                    var_id = df[df["Name"] == var]["ID"].values[0] if var in df["Name"].values else "Unknown"
-                    st.write(f"🔸 **{var}** (ID: {var_id})")
+            unique_variations.update(variations)
+
+        # Display unique variations (only once)
+        if unique_variations:
+            st.info(lang["variations_found"])
+            for var in unique_variations:
+                var_id = df[df["Name"] == var]["ID"].values[0] if var in df["Name"].values else "Unknown"
+                st.write(f"🔸 **{var}** (ID: {var_id})")
+
     else:
         # Perform fuzzy matching safely
         try:
             possible_matches = process.extract(input_name, df["Name"].dropna().tolist(), scorer=fuzz.ratio, limit=5)
-            variations = [(name, score, df[df["Name"] == name]["ID"].values[0]) for name, score in possible_matches if isinstance(name, str) and score > 80]
+            matched_variations = set()  # Store unique variations across all fuzzy matches
+            variations_displayed = False  # Track if we displayed variations
+
+            if possible_matches:
+                st.warning(lang["not_found"])
+                
+                for name, score in possible_matches:
+                    match_data = df[df["Name"] == name]
+                    if not match_data.empty:
+                        match_id = match_data["ID"].values[0]
+                        st.write(f"🔹 **{name}** (ID: {match_id}) - {lang['status_not_sure']}: {score}")
+
+                        # Collect unique variations for this ID
+                        variations = match_data.iloc[0][["Variation 1", "Variation 2", "Variation 3", "Variation 4", "Variation 5"]].dropna().tolist()
+                        matched_variations.update(variations)
+
+                # Display unique variations once
+                if matched_variations:
+                    st.info(lang["variations_found"])
+                    for var in matched_variations:
+                        var_id = df[df["Name"] == var]["ID"].values[0] if var in df["Name"].values else "Unknown"
+                        st.write(f"🔸 **{var}** (ID: {var_id})")
+                        variations_displayed = True
+
+                if not variations_displayed:
+                    st.info(lang["status_not_sure"])
+            else:
+                st.error(lang["does_not_exist"])
+
         except Exception as e:
-            variations = []
             st.error(f"❌ Error during fuzzy matching: {e} / Error durante la búsqueda difusa: {e}")
-
-        if variations:
-            st.warning(lang["not_found"])
-            for name, score, id_num in variations:
-                st.write(f"🔹 **{name}** (ID: {id_num}) - {lang['status_not_sure']}: {score}")
-
-                # Check for variations in matched names
-                var_match = df[df["Name"] == name]
-                if not var_match.empty:
-                    var_list = var_match.iloc[0][["Variation 1", "Variation 2", "Variation 3", "Variation 4", "Variation 5"]].dropna().tolist()
-                    if var_list:
-                        st.info(lang["variations_found"])
-                        for var in var_list:
-                            var_id = df[df["Name"] == var]["ID"].values[0] if var in df["Name"].values else "Unknown"
-                            st.write(f"🔸 **{var}** (ID: {var_id})")
-
-            st.info(lang["status_not_sure"])
-        else:
-            st.error(lang["does_not_exist"])
