@@ -107,7 +107,7 @@ languages = {
 lang = languages[selected_language]
 
 # Sidebar: Company Logo
-st.sidebar.image("https://your-company-logo-url.com/logo.png", use_column_width=True)
+st.sidebar.image("https://your-company-logo-url.com/logo.png", use_container_width=True)
 
 # Sidebar: Recent Searches
 st.sidebar.subheader(f"🔍 {lang['recent_searches']}")
