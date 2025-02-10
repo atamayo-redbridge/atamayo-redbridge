@@ -14,13 +14,16 @@ st.markdown("""
     }
     h1 {
         color: #B22222;
+        font-weight: bold;
         text-align: center;
+        margin-bottom: 20px;
     }
     .stTextInput>div>div>input {
-        border-radius: 5px;
-        border: 1px solid #B22222;
-        padding: 10px;
+        border-radius: 10px;
+        border: 2px solid #B22222;
+        padding: 12px;
         font-size: 16px;
+        box-shadow: inset 0px 2px 5px rgba(0, 0, 0, 0.1);
     }
     .stButton>button {
         border-radius: 5px;
@@ -29,24 +32,30 @@ st.markdown("""
         background-color: #B22222;
         color: #FFFFFF;
         border: none;
+        transition: all 0.3s ease-in-out;
     }
     .stButton>button:hover {
         background-color: #8B1A1A;
+        box-shadow: 0px 4px 10px rgba(178, 34, 34, 0.5);
+        transform: scale(1.05);
     }
     .css-1d391kg {
-        background-color: #FFFFFF !important;
-        border-right: 1px solid #B22222;
+        background-color: #F2F2F2 !important;
+        border-right: 2px solid #B22222;
     }
     .stDownloadButton>button {
         border-radius: 5px;
         font-size: 16px;
-        padding: 10px 20px;
+        padding: 12px 20px;
         background-color: #B22222;
         color: #FFFFFF;
         border: none;
+        transition: all 0.3s ease-in-out;
     }
     .stDownloadButton>button:hover {
         background-color: #8B1A1A;
+        box-shadow: 0px 4px 10px rgba(178, 34, 34, 0.5);
+        transform: scale(1.05);
     }
     </style>
 """, unsafe_allow_html=True)
