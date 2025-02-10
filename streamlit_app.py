@@ -7,53 +7,99 @@ import io
 # Custom CSS for UI Styling
 st.markdown("""
     <style>
-    .stApp {
-        background-color: #F8F9FA;
-        font-family: Arial, sans-serif;
-        color: #333333;
-        padding: 20px;
-    }
-    h1 {
-        color: #B22222;
-        text-align: center;
-        margin-bottom: 20px;
-    }
-    /* 🔹 Search Bar Fix */
-    .stTextInput>div>div>input {
-        background-color: #FFFFFF !important;
-        color: #000000 !important;
-        border-radius: 5px;
-        border: 2px solid #B22222;
-        padding: 10px;
-        font-size: 16px;
-        width: 100%;
-    }
-    .stTextInput>div>div {
-        width: 100%;
-        border-radius: 5px;
-        border: 2px solid #B22222;
-        padding: 5px;
-    }
-    /* 🔹 Sidebar Fix */
-    .stSidebar h1, .stSidebar h2, .stSidebar h3 {
-        color: #000000 !important;
-        font-size: 18px;
-        font-weight: bold;
-    }
-    /* 🔹 Buttons */
+/* 🔹 Global App Styling */
+.stApp {
+    background-color: #F8F9FA; /* Light gray background */
+    font-family: Arial, sans-serif;
+    color: #333333;
+    padding: 20px;
+}
+
+/* 🔹 Title Styling */
+h1 {
+    color: #B22222; /* Redbridge brand color */
+    text-align: center;
+    margin-bottom: 20px;
+}
+
+/* 🔹 Search Bar Fix */
+.stTextInput>div>div>input {
+    background-color: #FFFFFF !important; /* White background */
+    color: #000000 !important; /* Black text */
+    border-radius: 5px; /* Rounded corners */
+    border: 2px solid #B22222; /* Red border */
+    padding: 12px;
+    font-size: 16px;
+    width: 100%;
+}
+
+/* 🔹 Fix for Misaligned Red Border */
+.stTextInput>div>div {
+    border-radius: 5px;
+    border: 2px solid #B22222;
+    padding: 5px;
+}
+
+/* 🔹 Sidebar Styling */
+.css-1d391kg {
+    background-color: #F8F9FA !important; /* Light background for sidebar */
+    border-right: 2px solid #B22222; /* Red border for separation */
+}
+
+/* 🔹 Sidebar Title (Language Selection) */
+.stSidebar h1, .stSidebar h2, .stSidebar h3 {
+    color: #000000 !important; /* Ensure visibility */
+    font-size: 18px;
+    font-weight: bold;
+}
+
+/* 🔹 Buttons Styling */
+.stButton>button {
+    border-radius: 5px;
+    font-size: 16px;
+    padding: 10px 20px;
+    background-color: #B22222; /* Red primary button */
+    color: #FFFFFF;
+    border: none;
+    transition: 0.3s ease-in-out;
+}
+
+/* 🔹 Button Hover Effects */
+.stButton>button:hover {
+    background-color: #8B1A1A !important; /* Darker red on hover */
+    transform: scale(1.05);
+}
+
+/* 🔹 Download Button Styling */
+.stDownloadButton>button {
+    border-radius: 5px;
+    font-size: 16px;
+    padding: 10px 20px;
+    background-color: #B22222; /* Red button */
+    color: #FFFFFF;
+    border: none;
+    transition: 0.3s ease-in-out;
+}
+
+.stDownloadButton>button:hover {
+    background-color: #8B1A1A;
+}
+
+/* 🔹 Mobile-Friendly Adjustments */
+@media (max-width: 768px) {
     .stButton>button {
-        border-radius: 5px;
-        font-size: 16px;
-        padding: 10px 20px;
-        background-color: #B22222;
-        color: #FFFFFF;
-        border: none;
-        transition: 0.3s ease-in-out;
+        font-size: 14px;
+        padding: 8px 15px;
     }
-    .stButton>button:hover {
-        background-color: #8B1A1A !important;
-        transform: scale(1.05);
+    .stTextInput>div>div>input {
+        font-size: 14px;
+        padding: 10px;
     }
+    .stSidebar h1, .stSidebar h2, .stSidebar h3 {
+        font-size: 16px; /* Smaller text for mobile sidebar */
+    }
+}
+</style>
     </style>
 """, unsafe_allow_html=True)
 
