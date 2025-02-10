@@ -9,7 +9,7 @@ st.markdown("""
  <style>
 /* 🔹 Global App Styling */
 .stApp {
-    background-color: #F8F9FA; /* Light gray background */
+    background-color: #F8F9FA;
     font-family: Arial, sans-serif;
     color: #333333;
     padding: 20px;
@@ -24,44 +24,43 @@ h1 {
 
 /* 🔹 Search Bar Styling */
 .stTextInput>div>div>input {
-    background-color: #FFFFFF !important; /* White background */
-    color: #000000 !important; /* Black text */
+    background-color: #FFFFFF !important;
+    color: #000000 !important;
     border-radius: 5px;
-    border: 1px solid #B22222; /* Red border */
+    border: 1px solid #B22222;
     padding: 10px;
     font-size: 16px;
 }
 
-/* 🔹 Darken the Placeholder Text */
+/* 🔹 Darken Placeholder Text */
 .stTextInput>div>div>input::placeholder {
-    color: #555555 !important; /* Dark gray placeholder text */
+    color: #444444 !important; /* Darker contrast */
     opacity: 1;
 }
 
 /* 🔹 Sidebar Styling */
 .css-1d391kg {
-    background-color: #FFFFFF !important; /* White sidebar */
-    border-right: 1px solid #B22222; /* Red border */
+    background-color: #FFFFFF !important;
+    border-right: 1px solid #B22222;
 }
 
-/* 🔹 Sidebar Title ("Language / Idioma") - Keeping It White */
+/* 🔹 Sidebar Title ("Language / Idioma") */
 .stSidebar h1, .stSidebar h2, .stSidebar h3 {
-    color: #FFFFFF !important; /* White text for better visibility */
+    color: #FFFFFF !important;
     font-size: 18px;
     font-weight: bold;
 }
 
-/* 🔹 Buttons Styling */
+/* 🔹 Button Styling */
 .stButton>button {
     border-radius: 5px;
     font-size: 16px;
     padding: 10px 20px;
-    background-color: #B22222; /* Red primary button */
+    background-color: #B22222;
     color: #FFFFFF;
     border: none;
 }
 
-/* 🔹 Button Hover Effects */
 .stButton>button:hover {
     background-color: #8B1A1A !important;
 }
@@ -72,36 +71,35 @@ h1 {
     font-size: 16px;
     padding: 10px 20px;
     background-color: #B22222;
-    color: #FFFFFF !important; /* White text */
+    color: #FFFFFF !important;
     border: none;
 }
 
-/* 🔹 ✅ Success Message (Green Background, Black Text) */
-div[data-testid="stNotification"], div[data-testid="stAlert-success"] {
-    background-color: #D4EDDA !important; /* Light green background */
-    color: #000000 !important; /* Black text */
+/* ✅ Success Message (Green Background, Black Text) */
+div[data-testid="stNotification-success"], div[data-testid="stAlert-success"] {
+    background-color: #D4EDDA !important; /* Light green */
+    border-left: 5px solid #155724 !important;
+    color: #000000 !important;
     font-weight: bold;
+    padding: 10px;
 }
 
-/* 🔹 ⚠️ Warning Message (Yellow Background, Black Text) */
-div[data-testid="stNotification"], div[data-testid="stAlert-warning"] {
-    background-color: #FFF3CD !important; /* Light yellow background */
-    color: #000000 !important; /* Black text */
+/* ⚠️ Warning Message (Yellow Background, Black Text) */
+div[data-testid="stNotification-warning"], div[data-testid="stAlert-warning"] {
+    background-color: #FFF3CD !important; /* Light yellow */
+    border-left: 5px solid #856404 !important;
+    color: #000000 !important;
     font-weight: bold;
+    padding: 10px;
 }
 
-/* 🔹 ❌ Error Message (Red Background, Black Text) */
-div[data-testid="stNotification"], div[data-testid="stAlert-error"] {
-    background-color: #F8D7DA !important; /* Light red background */
-    color: #000000 !important; /* Black text */
+/* ❌ Error Message (Red Background, Black Text) */
+div[data-testid="stNotification-error"], div[data-testid="stAlert-error"] {
+    background-color: #F8D7DA !important; /* Light red */
+    border-left: 5px solid #721C24 !important;
+    color: #000000 !important;
     font-weight: bold;
-}
-
-/* 🔹 FORCE Streamlit Default Alerts to Keep Their Backgrounds */
-div[role="alert"] {
-    background-color: inherit !important; /* Keep original background */
-    color: #000000 !important; /* Ensure black text */
-    font-weight: bold;
+    padding: 10px;
 }
 </style>
 """, unsafe_allow_html=True)
