@@ -6,7 +6,7 @@ import io
 
 # Custom CSS Styling for Redbridge Branding
 st.markdown("""
-  <style>
+ <style>
 /* 🔹 Global App Styling */
 .stApp {
     background-color: #F8F9FA; /* Light gray background */
@@ -76,10 +76,17 @@ h1 {
     border: none;
 }
 
-/* 🔹 Darker Warning Message (⚠️ No Exact Match, but Similar Names Found) */
+/* 🔹 Darken All Result Messages (✅, ⚠️, ❌) */
+.stAlert {
+    background-color: #E6E6E6 !important; /* Slightly darker gray */
+    color: #000000 !important; /* Black text */
+    font-weight: bold;
+}
+
+/* 🔹 Make Exact Match Result (✅) Black */
 div[data-testid="stNotification"] {
     background-color: #E6E6E6 !important; /* Darker gray background */
-    color: #222222 !important; /* Darker text */
+    color: #000000 !important; /* Black text */
     font-weight: bold;
 }
 </style>
