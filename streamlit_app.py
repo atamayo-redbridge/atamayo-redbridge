@@ -42,7 +42,7 @@ selected_language = st.sidebar.radio("", ["English", "Español"])
 # Language options
 languages = {
     "English": {
-        "title": "🔎 Name Lookup with Variations",
+        "title": "🔎 WLT Providers Lookup ",
         "input_label": "Enter a name to check:",
         "button_label": "Find",
         "exact_match": "✅ Exact Match Found",
@@ -52,7 +52,7 @@ languages = {
         "status_not_sure": "❓ Status: Not Sure",
     },
     "Español": {
-        "title": "🔎 Búsqueda de Nombres con Variaciones",
+        "title": "🔎 Búsqueda de Proveedores en WLT",
         "input_label": "Ingrese un nombre para verificar:",
         "button_label": "Buscar",
         "exact_match": "✅ Coincidencia Exacta Encontrada",
