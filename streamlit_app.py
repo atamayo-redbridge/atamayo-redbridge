@@ -7,48 +7,102 @@ import io
 # Custom CSS Styling for Redbridge Branding
 st.markdown("""
     <style>
-    .stApp {
-        background-color: #F8F9FA;
-        font-family: Arial, sans-serif;
-        color: #333333;
-    }
-    h1 {
-        color: #B22222;
-        text-align: center;
+/* 🔹 Global App Styling */
+.stApp {
+    background-color: #F8F9FA; /* Light gray background */
+    font-family: Arial, sans-serif;
+    color: #333333;
+    padding: 20px;
+}
+
+/* 🔹 Title Styling */
+h1 {
+    color: #B22222; /* Redbridge brand color */
+    text-align: center;
+    margin-bottom: 20px;
+}
+
+/* 🔹 Search Bar Fix */
+.stTextInput>div>div>input {
+    background-color: #F2F2F2 !important; /* Light gray background */
+    color: #000000 !important; /* Black text */
+    border-radius: 5px; /* Rounded corners */
+    border: 2px solid #B22222; /* Red border */
+    padding: 12px;
+    font-size: 16px;
+    width: 100%;
+}
+
+/* 🔹 Fix for Misaligned Red Border */
+.stTextInput>div>div {
+    border-radius: 5px;
+    border: 2px solid #B22222;
+    padding: 5px;
+}
+
+/* 🔹 Sidebar Styling */
+.css-1d391kg {
+    background-color: #F8F9FA !important; /* Light background for sidebar */
+    border-right: 2px solid #B22222; /* Red border for separation */
+}
+
+/* 🔹 Sidebar Title ("Language / Idioma") - Make it White */
+.stSidebar h1, .stSidebar h2, .stSidebar h3 {
+    color: #FFFFFF !important; /* White text for better visibility */
+    font-size: 18px;
+    font-weight: bold;
+}
+
+/* 🔹 Match Found Text - Darker for Better Contrast */
+.stAlert {
+    background-color: #E6E6E6 !important; /* Slightly darker gray */
+    color: #222222 !important; /* Darker text */
+    font-weight: bold;
+}
+
+/* 🔹 Buttons Styling */
+.stButton>button {
+    border-radius: 5px;
+    font-size: 16px;
+    padding: 10px 20px;
+    background-color: #B22222; /* Red primary button */
+    color: #FFFFFF;
+    border: none;
+    transition: 0.3s ease-in-out;
+}
+
+/* 🔹 Download Button - Text White */
+.stDownloadButton>button {
+    border-radius: 5px;
+    font-size: 16px;
+    padding: 10px 20px;
+    background-color: #B22222; /* Red button */
+    color: #FFFFFF !important; /* Make text white */
+    border: none;
+    transition: 0.3s ease-in-out;
+}
+
+/* 🔹 Button Hover Effects */
+.stButton>button:hover, .stDownloadButton>button:hover {
+    background-color: #8B1A1A !important; /* Darker red on hover */
+    transform: scale(1.05);
+}
+
+/* 🔹 Mobile-Friendly Adjustments */
+@media (max-width: 768px) {
+    .stButton>button {
+        font-size: 14px;
+        padding: 8px 15px;
     }
     .stTextInput>div>div>input {
-        border-radius: 5px;
-        border: 1px solid #B22222;
+        font-size: 14px;
         padding: 10px;
-        font-size: 16px;
     }
-    .stButton>button {
-        border-radius: 5px;
-        font-size: 16px;
-        padding: 10px 20px;
-        background-color: #B22222;
-        color: #FFFFFF;
-        border: none;
+    .stSidebar h1, .stSidebar h2, .stSidebar h3 {
+        font-size: 16px; /* Smaller text for mobile sidebar */
     }
-    .stButton>button:hover {
-        background-color: #8B1A1A;
-    }
-    .css-1d391kg {
-        background-color: #FFFFFF !important;
-        border-right: 1px solid #B22222;
-    }
-    .stDownloadButton>button {
-        border-radius: 5px;
-        font-size: 16px;
-        padding: 10px 20px;
-        background-color: #B22222;
-        color: #FFFFFF;
-        border: none;
-    }
-    .stDownloadButton>button:hover {
-        background-color: #8B1A1A;
-    }
-    </style>
+}
+</style>
 """, unsafe_allow_html=True)
 
 # Load Excel File
