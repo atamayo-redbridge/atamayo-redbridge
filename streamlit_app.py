@@ -5,7 +5,7 @@ from fuzzywuzzy import fuzz, process
 # Load Excel File (Make sure to update the file path)
 @st.cache_data
 def load_data():
-    file_path = "names_database.xlsx"  # Change to your file path
+    file_path = "Provider_Duplicates_Variations_Active.xlsx"  # Change to your file path
     df = pd.read_excel(file_path)
     return df
 
