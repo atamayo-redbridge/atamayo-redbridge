@@ -76,10 +76,17 @@ h1 {
     border: none;
 }
 
-/* 🔹 Make ALL Result Messages (✅, ⚠️, ❌) Black */
-div[data-testid="stNotification"], .stAlert, .stWarning {
+/* 🔹 FORCE Warning Message (⚠️ No Exact Match) to Be BLACK */
+div[data-testid="stAlert"] {
     background-color: #E6E6E6 !important; /* Slightly darker gray */
     color: #000000 !important; /* Pure black text */
+    font-weight: bold;
+}
+
+/* 🔹 FORCE Streamlit Default Warning Messages (Just in Case) */
+div[role="alert"] {
+    background-color: #E6E6E6 !important; /* Darker gray */
+    color: #000000 !important; /* Black text */
     font-weight: bold;
 }
 </style>
