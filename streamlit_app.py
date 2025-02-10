@@ -12,7 +12,7 @@ def load_data(file_path):
     return None
 
 # File path (update if necessary)
-file_path = "Provider_Duplicates_Variations_Active.xlsx"
+file_path = "data/Provider_Duplicates_Variations_Active.xlsx"
 df = load_data(file_path)
 
 # Ensure the file is loaded
