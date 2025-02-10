@@ -77,23 +77,30 @@ h1 {
 }
 
 /* 🔹 ✅ Success Message (Green Background, Black Text) */
-div[data-testid="stAlert-success"], div[data-testid="stNotification-success"] {
+div[data-testid="stNotification"], div[data-testid="stAlert-success"] {
     background-color: #D4EDDA !important; /* Light green background */
     color: #000000 !important; /* Black text */
     font-weight: bold;
 }
 
 /* 🔹 ⚠️ Warning Message (Yellow Background, Black Text) */
-div[data-testid="stAlert-warning"], div[data-testid="stNotification-warning"] {
+div[data-testid="stNotification"], div[data-testid="stAlert-warning"] {
     background-color: #FFF3CD !important; /* Light yellow background */
     color: #000000 !important; /* Black text */
     font-weight: bold;
 }
 
 /* 🔹 ❌ Error Message (Red Background, Black Text) */
-div[data-testid="stAlert-error"], div[data-testid="stNotification-error"] {
+div[data-testid="stNotification"], div[data-testid="stAlert-error"] {
     background-color: #F8D7DA !important; /* Light red background */
     color: #000000 !important; /* Black text */
+    font-weight: bold;
+}
+
+/* 🔹 FORCE Streamlit Default Alerts to Keep Their Backgrounds */
+div[role="alert"] {
+    background-color: inherit !important; /* Keep original background */
+    color: #000000 !important; /* Ensure black text */
     font-weight: bold;
 }
 </style>
