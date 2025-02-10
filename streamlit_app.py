@@ -75,7 +75,7 @@ selected_language = st.sidebar.radio("", ["English", "Español"])
 # Language dictionary
 languages = {
     "English": {
-        "title": "🔎 Name Lookup with Variations",
+        "title": "Name Lookup with Variations",
         "input_label": "Enter a name to check:",
         "button_label": "Find",
         "clear_button": "🧹 Clear Search",
@@ -89,7 +89,7 @@ languages = {
         "help_text": "Enter the exact name (case-sensitive, no extra spaces)",
     },
     "Español": {
-        "title": "🔎 Búsqueda de Nombres con Variaciones",
+        "title": "Búsqueda de Nombres con Variaciones",
         "input_label": "Ingrese un nombre para verificar:",
         "button_label": "Buscar",
         "clear_button": "🧹 Limpiar Búsqueda",
@@ -124,12 +124,14 @@ else:
 st.markdown(f"<h1 style='text-align: center;'>{lang['title']}</h1>", unsafe_allow_html=True)
 
 # Search Input with Tooltip
+# Modify the search bar input to dynamically change the placeholder
 input_name = st.text_input(
     f"🔍 {lang['input_label']}",
     "",
     help=lang["help_text"],
-    placeholder="🔎 Type a name here..."
+    placeholder="🔎 " + ("Type a name here..." if selected_language == "English" else "Escriba un nombre aquí...")
 ).strip()
+
 
 # Buttons
 find_button = st.button(lang["button_label"])
