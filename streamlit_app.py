@@ -138,7 +138,7 @@ clear_button = st.button(lang["clear_button"])
 # Clear Search History
 if clear_button:
     st.session_state["search_history"] = []
-    st.experimental_rerun()
+    st.rerun()
 
 # Search Logic
 if find_button and input_name:
