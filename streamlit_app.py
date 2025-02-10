@@ -4,26 +4,23 @@ from fuzzywuzzy import fuzz, process
 import os
 import io
 
-# Custom CSS for UI Styling
+# Custom CSS Styling for Redbridge Branding
 st.markdown("""
     <style>
     .stApp {
         background-color: #F8F9FA;
         font-family: Arial, sans-serif;
         color: #333333;
-        padding: 20px;
     }
     h1 {
         color: #B22222;
         text-align: center;
-        margin-bottom: 20px;
     }
     .stTextInput>div>div>input {
         border-radius: 5px;
         border: 1px solid #B22222;
         padding: 10px;
         font-size: 16px;
-        margin-bottom: 15px;
     }
     .stButton>button {
         border-radius: 5px;
@@ -32,14 +29,12 @@ st.markdown("""
         background-color: #B22222;
         color: #FFFFFF;
         border: none;
-        transition: 0.3s ease-in-out;
     }
     .stButton>button:hover {
-        background-color: #8B1A1A !important;
-        transform: scale(1.05);
+        background-color: #8B1A1A;
     }
     .css-1d391kg {
-        background-color: #F8F9FA !important;
+        background-color: #FFFFFF !important;
         border-right: 1px solid #B22222;
     }
     .stDownloadButton>button {
@@ -49,16 +44,9 @@ st.markdown("""
         background-color: #B22222;
         color: #FFFFFF;
         border: none;
-        transition: 0.3s ease-in-out;
     }
     .stDownloadButton>button:hover {
         background-color: #8B1A1A;
-    }
-    @media (max-width: 768px) {
-        .stButton>button {
-            font-size: 14px;
-            padding: 8px 15px;
-        }
     }
     </style>
 """, unsafe_allow_html=True)
@@ -73,7 +61,7 @@ def load_data(file_path):
     return None
 
 # File path (update if necessary)
-file_path = "data/Provider_Duplicates_Variations_Active.xlsx"
+file_path = "Provider_Duplicates_Variations_Active.xlsx"
 df = load_data(file_path)
 
 # Ensure the file is loaded
@@ -104,9 +92,9 @@ languages = {
         "exact_match": "✅ Exact Match Found",
         "not_found": "⚠️ No Exact Match, but Similar Names Found:",
         "does_not_exist": "❌ Name Does Not Exist in the database.",
+        "variations_found": "🟡 Unique Variations Found:",
         "help_text": "Enter the exact name (case-sensitive, no extra spaces)",
-        "placeholder": "🔎 Type a name here...",
-        "view_matches": "View Similar Matches"
+        "placeholder": "🔎 Type a name here..."
     },
     "Español": {
         "title": "Búsqueda de Proveedores",
@@ -117,9 +105,9 @@ languages = {
         "exact_match": "✅ Coincidencia Exacta Encontrada",
         "not_found": "⚠️ No hay coincidencia exacta, pero encontramos nombres similares:",
         "does_not_exist": "❌ El nombre no existe en la base de datos.",
+        "variations_found": "🟡 Variaciones Únicas Encontradas:",
         "help_text": "Ingrese el nombre exacto (distingue mayúsculas y espacios)",
-        "placeholder": "🔎 Escriba un nombre aquí...",
-        "view_matches": "Ver Nombres Similares"
+        "placeholder": "🔎 Escriba un nombre aquí..."
     },
 }
 
@@ -156,34 +144,42 @@ if find_button and input_name:
         # Exact Matches
         exact_matches = df[df["Name"] == input_name]
         if not exact_matches.empty:
-            st.success(f"✅ {lang['exact_match']} ({len(exact_matches)} results found)")
+            st.success(f"{lang['exact_match']} ({len(exact_matches)} results found)")
             with st.expander(f"📌 View Exact Matches ({len(exact_matches)})"):
                 for _, row in exact_matches.iterrows():
-                    st.markdown(f"✅ **{row['Name']}** (ID: {row['ID']})", unsafe_allow_html=True)
+                    st.write(f"🔹 **{row['Name']}** (ID: {row['ID']})")
 
         else:
             possible_matches = process.extract(input_name, df["Name"].dropna().tolist(), scorer=fuzz.ratio, limit=5)
             if possible_matches:
                 st.warning(f"⚠️ {lang['not_found']} ({len(possible_matches)} {'similar names found' if selected_language == 'English' else 'nombres similares encontrados'})")
                 
-                with st.expander(f"🔍 {lang['view_matches']} ({len(possible_matches)})"):
-                    for name, _ in possible_matches:
+                with st.expander(f"🔍 {'View Similar Matches' if selected_language == 'English' else 'Ver Nombres Similares'} ({len(possible_matches)})"):
+                    for name, score in possible_matches:
                         match_data = df[df["Name"] == name]
                         if not match_data.empty:
                             match_id = match_data["ID"].values[0]
-                            st.markdown(f"⚠️ **{name}** (ID: {match_id})", unsafe_allow_html=True)
+                            st.write(f"🔹 **{name}** (ID: {match_id})")
 
             else:
                 st.error(lang["does_not_exist"])
 
-    # Download Button
+    # Convert results to DataFrame for download
+    result_df = pd.DataFrame({
+        "Searched Name": [input_name],
+        "Exact Matches": [", ".join(exact_matches["Name"].tolist())] if not exact_matches.empty else [""],
+        "Matched IDs": [", ".join(exact_matches["ID"].tolist())] if not exact_matches.empty else [""]
+    })
+
     buffer = io.BytesIO()
-    df.to_excel(buffer, index=False)
+    result_df.to_excel(buffer, index=False)
     buffer.seek(0)
 
+    # Download Button
     st.download_button(
         label=lang["download_results"],
         data=buffer,
         file_name="Search_Results.xlsx",
-        mime="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
+        mime="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+        help="Click to download search results as an Excel file"
     )
