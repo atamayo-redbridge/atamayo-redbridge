@@ -4,40 +4,49 @@ from fuzzywuzzy import fuzz, process
 import os
 import io
 
-# Custom CSS Styling for UI Enhancements
+# Custom CSS Styling for Redbridge Branding
 st.markdown("""
     <style>
-    /* Style the search input */
+    .stApp {
+        background-color: #F8F9FA;
+        font-family: Arial, sans-serif;
+        color: #333333;
+    }
+    h1 {
+        color: #B22222;
+        text-align: center;
+    }
     .stTextInput>div>div>input {
-        border-radius: 10px;
-        border: 1px solid #ccc;
+        border-radius: 5px;
+        border: 1px solid #B22222;
         padding: 10px;
         font-size: 16px;
     }
-    
-    /* Style the buttons */
     .stButton>button {
-        border-radius: 8px;
+        border-radius: 5px;
         font-size: 16px;
-        padding: 8px 16px;
-        background-color: #4CAF50; /* Green */
-        color: white;
+        padding: 10px 20px;
+        background-color: #B22222;
+        color: #FFFFFF;
         border: none;
     }
     .stButton>button:hover {
-        background-color: #45a049;
+        background-color: #8B1A1A;
     }
-    
-    /* Style the sidebar */
     .css-1d391kg {
-        background-color: #f8f9fa !important;
+        background-color: #FFFFFF !important;
+        border-right: 1px solid #B22222;
     }
-
-    /* Style the main container */
-    .main {
-        background-color: #ffffff;
-        border-radius: 10px;
-        padding: 20px;
+    .stDownloadButton>button {
+        border-radius: 5px;
+        font-size: 16px;
+        padding: 10px 20px;
+        background-color: #B22222;
+        color: #FFFFFF;
+        border: none;
+    }
+    .stDownloadButton>button:hover {
+        background-color: #8B1A1A;
     }
     </style>
 """, unsafe_allow_html=True)
@@ -52,7 +61,7 @@ def load_data(file_path):
     return None
 
 # File path (update if necessary)
-file_path = "data/Provider_Duplicates_Variations_Active.xlsx"
+file_path = "Provider_Duplicates_Variations_Active.xlsx"
 df = load_data(file_path)
 
 # Ensure the file is loaded
@@ -75,8 +84,7 @@ selected_language = st.sidebar.radio("", ["English", "Español"])
 # Language dictionary
 languages = {
     "English": {
-        "title": "Name Lookup with Variations",
-        "input_label": "Enter a name to check:",
+        "title": "Provider Name Lookup",
         "button_label": "Find",
         "clear_button": "🧹 Clear Search",
         "recent_searches": "Recent Searches",
@@ -85,12 +93,11 @@ languages = {
         "not_found": "⚠️ No Exact Match, but Similar Names Found:",
         "does_not_exist": "❌ Name Does Not Exist in the database.",
         "variations_found": "🟡 Unique Variations Found:",
-        "status_not_sure": "❓ Status: Not Sure",
         "help_text": "Enter the exact name (case-sensitive, no extra spaces)",
+        "placeholder": "🔎 Type a name here..."
     },
     "Español": {
-        "title": "Búsqueda de Nombres con Variaciones",
-        "input_label": "Ingrese un nombre para verificar:",
+        "title": "Búsqueda de Proveedores",
         "button_label": "Buscar",
         "clear_button": "🧹 Limpiar Búsqueda",
         "recent_searches": "Búsquedas Recientes",
@@ -99,39 +106,23 @@ languages = {
         "not_found": "⚠️ No hay coincidencia exacta, pero encontramos nombres similares:",
         "does_not_exist": "❌ El nombre no existe en la base de datos.",
         "variations_found": "🟡 Variaciones Únicas Encontradas:",
-        "status_not_sure": "❓ Estado: No Seguro",
         "help_text": "Ingrese el nombre exacto (distingue mayúsculas y espacios)",
+        "placeholder": "🔎 Escriba un nombre aquí..."
     },
 }
 
 lang = languages[selected_language]
 
-# Sidebar: Company Logo
-st.sidebar.image("https://your-company-logo-url.com/logo.png", use_container_width=True)
-
-# Sidebar: Recent Searches
-st.sidebar.subheader(f"🔍 {lang['recent_searches']}")
-if "search_history" not in st.session_state:
-    st.session_state["search_history"] = []
-
-if st.session_state["search_history"]:
-    for name in reversed(st.session_state["search_history"][-5:]):
-        st.sidebar.write(f"🔹 {name}")
-else:
-    st.sidebar.write("🔹 No recent searches")
-
 # Title
-st.markdown(f"<h1 style='text-align: center;'>{lang['title']}</h1>", unsafe_allow_html=True)
+st.markdown(f"<h1>{lang['title']}</h1>", unsafe_allow_html=True)
 
-# Search Input with Tooltip
-# Modify the search bar input to dynamically change the placeholder
+# Search Input with Dynamic Placeholder
 input_name = st.text_input(
-    f"🔍 {lang['input_label']}",
+    "",
     "",
     help=lang["help_text"],
-    placeholder="🔎 " + ("Type a name here..." if selected_language == "English" else "Escriba un nombre aquí...")
+    placeholder=lang["placeholder"]
 ).strip()
-
 
 # Buttons
 find_button = st.button(lang["button_label"])
@@ -145,6 +136,8 @@ if clear_button:
 # Search Logic
 if find_button and input_name:
     with st.spinner("🔍 Searching... Please wait!"):
+        if "search_history" not in st.session_state:
+            st.session_state["search_history"] = []
         if input_name not in st.session_state["search_history"]:
             st.session_state["search_history"].append(input_name)
 
@@ -159,13 +152,14 @@ if find_button and input_name:
         else:
             possible_matches = process.extract(input_name, df["Name"].dropna().tolist(), scorer=fuzz.ratio, limit=5)
             if possible_matches:
-                st.warning(f"⚠️ {lang['not_found']} ({len(possible_matches)} similar names found)")
-                with st.expander(f"🔍 View Similar Matches ({len(possible_matches)})"):
+                st.warning(f"⚠️ {lang['not_found']} ({len(possible_matches)} {'similar names found' if selected_language == 'English' else 'nombres similares encontrados'})")
+                
+                with st.expander(f"🔍 {'View Similar Matches' if selected_language == 'English' else 'Ver Nombres Similares'} ({len(possible_matches)})"):
                     for name, score in possible_matches:
                         match_data = df[df["Name"] == name]
                         if not match_data.empty:
                             match_id = match_data["ID"].values[0]
-                            st.write(f"🔹 **{name}** (ID: {match_id}) - {lang['status_not_sure']}: {score}")
+                            st.write(f"🔹 **{name}** (ID: {match_id})")
 
             else:
                 st.error(lang["does_not_exist"])
