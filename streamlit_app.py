@@ -12,7 +12,7 @@ def load_data(file_path):
     return None
 
 # File path (update if necessary)
-file_path = "data/Provider_Duplicates_Variations_Active.xlsx"
+file_path = "Provider_Duplicates_Variations_Active.xlsx"
 df = load_data(file_path)
 
 # Ensure the file is loaded
@@ -45,7 +45,7 @@ languages = {
         "title": "🔎 Name Lookup with Variations",
         "input_label": "Enter a name to check:",
         "button_label": "Find",
-        "exact_match": "✅ Exact Matches Found",
+        "exact_match": "✅ Exact Match Found",
         "not_found": "⚠️ No Exact Match, but Similar Names Found:",
         "does_not_exist": "❌ Name Does Not Exist in the database.",
         "variations_found": "🟡 Unique Variations Found:",
@@ -55,7 +55,7 @@ languages = {
         "title": "🔎 Búsqueda de Nombres con Variaciones",
         "input_label": "Ingrese un nombre para verificar:",
         "button_label": "Buscar",
-        "exact_match": "✅ Coincidencias Exactas Encontradas",
+        "exact_match": "✅ Coincidencia Exacta Encontrada",
         "not_found": "⚠️ No hay coincidencia exacta, pero encontramos nombres similares:",
         "does_not_exist": "❌ El nombre no existe en la base de datos.",
         "variations_found": "🟡 Variaciones Únicas Encontradas:",
@@ -74,8 +74,8 @@ find_button = st.button(lang["button_label"])
 
 # Run search only when button is clicked
 if find_button and input_name:
-    # Check for exact matches
-    exact_matches = df[df["Name"].str.lower() == input_name.lower()]
+    # Check for exact matches (Case-sensitive, space-sensitive, and character-sensitive)
+    exact_matches = df[df["Name"] == input_name]  # Strict match with NO alterations
 
     if not exact_matches.empty:
         st.success(f"{lang['exact_match']}:")
@@ -96,7 +96,7 @@ if find_button and input_name:
                 st.write(f"🔸 **{var}** (ID: {var_id})")
 
     else:
-        # Perform fuzzy matching safely
+        # Perform fuzzy matching safely (case-insensitive and space-insensitive for variations)
         try:
             possible_matches = process.extract(input_name, df["Name"].dropna().tolist(), scorer=fuzz.ratio, limit=5)
             matched_variations = set()  # Store unique variations across all fuzzy matches
@@ -106,14 +106,15 @@ if find_button and input_name:
                 st.warning(lang["not_found"])
                 
                 for name, score in possible_matches:
-                    match_data = df[df["Name"] == name]
-                    if not match_data.empty:
-                        match_id = match_data["ID"].values[0]
-                        st.write(f"🔹 **{name}** (ID: {match_id}) - {lang['status_not_sure']}: {score}")
+                    if name != input_name:  # Ensure no exact match slips in
+                        match_data = df[df["Name"] == name]
+                        if not match_data.empty:
+                            match_id = match_data["ID"].values[0]
+                            st.write(f"🔹 **{name}** (ID: {match_id}) - {lang['status_not_sure']}: {score}")
 
-                        # Collect unique variations for this ID
-                        variations = match_data.iloc[0][["Variation 1", "Variation 2", "Variation 3", "Variation 4", "Variation 5"]].dropna().tolist()
-                        matched_variations.update(variations)
+                            # Collect unique variations for this ID
+                            variations = match_data.iloc[0][["Variation 1", "Variation 2", "Variation 3", "Variation 4", "Variation 5"]].dropna().tolist()
+                            matched_variations.update(variations)
 
                 # Display unique variations once
                 if matched_variations:
