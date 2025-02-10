@@ -18,13 +18,29 @@ st.markdown("""
         text-align: center;
         margin-bottom: 20px;
     }
+    /* 🔹 Search Bar Fix */
     .stTextInput>div>div>input {
+        background-color: #FFFFFF !important;
+        color: #000000 !important;
         border-radius: 5px;
-        border: 1px solid #B22222;
+        border: 2px solid #B22222;
         padding: 10px;
         font-size: 16px;
-        margin-bottom: 15px;
+        width: 100%;
     }
+    .stTextInput>div>div {
+        width: 100%;
+        border-radius: 5px;
+        border: 2px solid #B22222;
+        padding: 5px;
+    }
+    /* 🔹 Sidebar Fix */
+    .stSidebar h1, .stSidebar h2, .stSidebar h3 {
+        color: #000000 !important;
+        font-size: 18px;
+        font-weight: bold;
+    }
+    /* 🔹 Buttons */
     .stButton>button {
         border-radius: 5px;
         font-size: 16px;
@@ -37,28 +53,6 @@ st.markdown("""
     .stButton>button:hover {
         background-color: #8B1A1A !important;
         transform: scale(1.05);
-    }
-    .css-1d391kg {
-        background-color: #F8F9FA !important;
-        border-right: 1px solid #B22222;
-    }
-    .stDownloadButton>button {
-        border-radius: 5px;
-        font-size: 16px;
-        padding: 10px 20px;
-        background-color: #B22222;
-        color: #FFFFFF;
-        border: none;
-        transition: 0.3s ease-in-out;
-    }
-    .stDownloadButton>button:hover {
-        background-color: #8B1A1A;
-    }
-    @media (max-width: 768px) {
-        .stButton>button {
-            font-size: 14px;
-            padding: 8px 15px;
-        }
     }
     </style>
 """, unsafe_allow_html=True)
