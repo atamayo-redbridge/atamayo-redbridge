@@ -76,16 +76,23 @@ h1 {
     border: none;
 }
 
-/* 🔹 FORCE Warning Message (⚠️ No Exact Match) to Be BLACK */
-div[data-testid="stAlert"] {
-    background-color: #E6E6E6 !important; /* Slightly darker gray */
-    color: #000000 !important; /* Pure black text */
+/* 🔹 ✅ Success Message (Green Background, Black Text) */
+div[data-testid="stAlert-success"], div[data-testid="stNotification-success"] {
+    background-color: #D4EDDA !important; /* Light green background */
+    color: #000000 !important; /* Black text */
     font-weight: bold;
 }
 
-/* 🔹 FORCE Streamlit Default Warning Messages (Just in Case) */
-div[role="alert"] {
-    background-color: #E6E6E6 !important; /* Darker gray */
+/* 🔹 ⚠️ Warning Message (Yellow Background, Black Text) */
+div[data-testid="stAlert-warning"], div[data-testid="stNotification-warning"] {
+    background-color: #FFF3CD !important; /* Light yellow background */
+    color: #000000 !important; /* Black text */
+    font-weight: bold;
+}
+
+/* 🔹 ❌ Error Message (Red Background, Black Text) */
+div[data-testid="stAlert-error"], div[data-testid="stNotification-error"] {
+    background-color: #F8D7DA !important; /* Light red background */
     color: #000000 !important; /* Black text */
     font-weight: bold;
 }
