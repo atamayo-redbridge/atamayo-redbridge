@@ -6,49 +6,70 @@ import io
 
 # Custom CSS Styling for Redbridge Branding
 st.markdown("""
-    <style>
-    .stApp {
-        background-color: #F8F9FA;
-        font-family: Arial, sans-serif;
-        color: #333333;
-    }
-    h1 {
-        color: #B22222;
-        text-align: center;
-    }
-    .stTextInput>div>div>input {
-        border-radius: 5px;
-        border: 1px solid #B22222;
-        padding: 10px;
-        font-size: 16px;
-    }
-    .stButton>button {
-        border-radius: 5px;
-        font-size: 16px;
-        padding: 10px 20px;
-        background-color: #B22222;
-        color: #FFFFFF;
-        border: none;
-    }
-    .stButton>button:hover {
-        background-color: #8B1A1A;
-    }
-    .css-1d391kg {
-        background-color: #FFFFFF !important;
-        border-right: 1px solid #B22222;
-    }
-    .stDownloadButton>button {
-        border-radius: 5px;
-        font-size: 16px;
-        padding: 10px 20px;
-        background-color: #B22222;
-        color: #FFFFFF;
-        border: none;
-    }
-    .stDownloadButton>button:hover {
-        background-color: #8B1A1A;
-    }
-    </style>
+  <style>
+/* 🔹 Global App Styling */
+.stApp {
+    background-color: #F8F9FA; /* Light gray background */
+    font-family: Arial, sans-serif;
+    color: #333333;
+    padding: 20px;
+}
+
+/* 🔹 Title Styling */
+h1 {
+    color: #B22222; /* Redbridge brand color */
+    text-align: center;
+    margin-bottom: 20px;
+}
+
+/* 🔹 Search Bar (Reverted to Previous Version) */
+.stTextInput>div>div>input {
+    background-color: #FFFFFF !important; /* White background */
+    color: #000000 !important; /* Black text */
+    border-radius: 5px;
+    border: 1px solid #B22222; /* Red border */
+    padding: 10px;
+    font-size: 16px;
+}
+
+/* 🔹 Sidebar Styling */
+.css-1d391kg {
+    background-color: #FFFFFF !important; /* White sidebar */
+    border-right: 1px solid #B22222; /* Red border */
+}
+
+/* 🔹 Sidebar Title ("Language / Idioma") - Keeping It White */
+.stSidebar h1, .stSidebar h2, .stSidebar h3 {
+    color: #FFFFFF !important; /* White text for better visibility */
+    font-size: 18px;
+    font-weight: bold;
+}
+
+/* 🔹 Buttons Styling (Reverted) */
+.stButton>button {
+    border-radius: 5px;
+    font-size: 16px;
+    padding: 10px 20px;
+    background-color: #B22222; /* Red primary button */
+    color: #FFFFFF;
+    border: none;
+}
+
+/* 🔹 Button Hover Effects (Reverted) */
+.stButton>button:hover {
+    background-color: #8B1A1A !important;
+}
+
+/* 🔹 Download Button (Reverted) */
+.stDownloadButton>button {
+    border-radius: 5px;
+    font-size: 16px;
+    padding: 10px 20px;
+    background-color: #B22222;
+    color: #FFFFFF !important; /* White text */
+    border: none;
+}
+</style>
 """, unsafe_allow_html=True)
 
 # Load Excel File
