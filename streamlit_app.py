@@ -1,64 +1,75 @@
 import streamlit as st
 import pandas as pd
 from fuzzywuzzy import fuzz, process
+import os
 
-# Load Excel File (Make sure to update the file path)
+# Load Excel File
 @st.cache_data
-def load_data():
-    file_path = "data/Provider_Duplicates_Variations_Active.xlsx"  # Change to your file path
-    df = pd.read_excel(file_path)
-    return df
+def load_data(file_path):
+    if os.path.exists(file_path):
+        df = pd.read_excel(file_path, dtype=str)  # Ensure string data type
+        return df
+    return None
 
-df = load_data()
+# File path (update if necessary)
+file_path = "data/Provider_Duplicates_Variations_Active.xlsx"
+df = load_data(file_path)
 
-# Ensure the column name matches the Excel file
-name_column = "Name"  # Change if needed
+# Ensure the file is loaded
+if df is None:
+    st.warning("⚠️ File not found! Please upload the database.")
+    uploaded_file = st.file_uploader("Upload the Excel file", type=["xlsx"])
+    
+    if uploaded_file:
+        df = pd.read_excel(uploaded_file, dtype=str)
+        st.success("✅ File uploaded successfully!")
+    else:
+        st.error("❌ No file uploaded. Please provide an Excel file.")
+        st.stop()
 
-# Language options
-languages = {
-    "English": {
-        "title": "Name Lookup System",
-        "input_label": "Enter a name to check:",
-        "exists": "✅ Name Exists in the database.",
-        "not_sure": "⚠️ Name Not Found, but we found similar names:",
-        "status_not_sure": "❓ Status: Not Sure",
-        "does_not_exist": "❌ Name Does Not Exist in the database.",
-        "language_label": "Select Language:",
-    },
-    "Español": {
-        "title": "Sistema de Búsqueda de Nombres",
-        "input_label": "Ingrese un nombre para verificar:",
-        "exists": "✅ El nombre existe en la base de datos.",
-        "not_sure": "⚠️ Nombre no encontrado, pero encontramos nombres similares:",
-        "status_not_sure": "❓ Estado: No Seguro",
-        "does_not_exist": "❌ El nombre no existe en la base de datos.",
-        "language_label": "Seleccionar idioma:",
-    },
-}
+# Ensure necessary columns exist
+required_columns = ["Name", "ID", "Variation 1", "Variation 2", "Variation 3", "Variation 4", "Variation 5"]
+missing_columns = [col for col in required_columns if col not in df.columns]
 
-# Select Language
-selected_language = st.selectbox("🌍 Select Language / Seleccionar idioma:", list(languages.keys()))
-lang = languages[selected_language]
+if missing_columns:
+    st.error(f"❌ Missing columns in Excel file: {', '.join(missing_columns)}")
+    st.stop()
 
-st.title(lang["title"])
+st.title("🔎 Name Lookup with Variations")
 
 # User Input
-input_name = st.text_input(lang["input_label"], "")
+input_name = st.text_input("Enter a name to check:", "").strip()
 
 if input_name:
     # Check for exact match
-    exact_match = df[df[name_column].str.lower() == input_name.lower()]
+    exact_match = df[df["Name"].str.lower() == input_name.lower()]
 
     if not exact_match.empty:
-        st.success(lang["exists"])
+        exact_id = exact_match["ID"].values[0]
+        st.success(f"✅ Exact Match Found: **{input_name}** (ID: {exact_id})")
     else:
-        # Check for variations using fuzzy matching
-        possible_matches = process.extract(input_name, df[name_column], scorer=fuzz.ratio, limit=5)
-        variations = [name for name, score in possible_matches if score > 80]  # Adjust threshold if needed
+        # Perform fuzzy matching safely
+        try:
+            possible_matches = process.extract(input_name, df["Name"].dropna().tolist(), scorer=fuzz.ratio, limit=5)
+            variations = [(name, score, df[df["Name"] == name]["ID"].values[0]) for name, score in possible_matches if isinstance(name, str) and score > 80]
+        except Exception as e:
+            variations = []
+            st.error(f"❌ Error during fuzzy matching: {e}")
 
         if variations:
-            st.warning(lang["not_sure"])
-            st.write(variations)
-            st.info(lang["status_not_sure"])
+            st.warning("⚠️ No Exact Match, but Similar Names Found:")
+            for name, score, id_num in variations:
+                st.write(f"🔹 **{name}** (ID: {id_num}) - Match Score: {score}")
+            st.info("❓ Status: Not Sure")
         else:
-            st.error(lang["does_not_exist"])
+            st.error("❌ Name Does Not Exist in the database.")
+
+    # Check for name variations
+    name_variations = df[df["Name"].str.lower() == input_name.lower()]
+    if not name_variations.empty:
+        var_list = name_variations.iloc[0][["Variation 1", "Variation 2", "Variation 3", "Variation 4", "Variation 5"]].dropna().tolist()
+        if var_list:
+            st.info("🟡 Possible Variations Found:")
+            for variation in var_list:
+                variation_id = df[df["Name"] == variation]["ID"].values[0] if variation in df["Name"].values else "Unknown"
+                st.write(f"🔸 **{variation}** (ID: {variation_id})")
