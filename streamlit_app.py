@@ -76,17 +76,10 @@ h1 {
     border: none;
 }
 
-/* 🔹 Darken All Result Messages (✅, ⚠️, ❌) */
-.stAlert {
+/* 🔹 Make ALL Result Messages (✅, ⚠️, ❌) Black */
+div[data-testid="stNotification"], .stAlert, .stWarning {
     background-color: #E6E6E6 !important; /* Slightly darker gray */
-    color: #000000 !important; /* Black text */
-    font-weight: bold;
-}
-
-/* 🔹 Make Exact Match Result (✅) Black */
-div[data-testid="stNotification"] {
-    background-color: #E6E6E6 !important; /* Darker gray background */
-    color: #000000 !important; /* Black text */
+    color: #000000 !important; /* Pure black text */
     font-weight: bold;
 }
 </style>
