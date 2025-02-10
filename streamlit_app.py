@@ -4,12 +4,50 @@ from fuzzywuzzy import fuzz, process
 import os
 import io
 
+# Custom CSS Styling for UI Enhancements
+st.markdown("""
+    <style>
+    /* Style the search input */
+    .stTextInput>div>div>input {
+        border-radius: 10px;
+        border: 1px solid #ccc;
+        padding: 10px;
+        font-size: 16px;
+    }
+    
+    /* Style the buttons */
+    .stButton>button {
+        border-radius: 8px;
+        font-size: 16px;
+        padding: 8px 16px;
+        background-color: #4CAF50; /* Green */
+        color: white;
+        border: none;
+    }
+    .stButton>button:hover {
+        background-color: #45a049;
+    }
+    
+    /* Style the sidebar */
+    .css-1d391kg {
+        background-color: #f8f9fa !important;
+    }
+
+    /* Style the main container */
+    .main {
+        background-color: #ffffff;
+        border-radius: 10px;
+        padding: 20px;
+    }
+    </style>
+""", unsafe_allow_html=True)
+
 # Load Excel File
 @st.cache_data
 def load_data(file_path):
     if os.path.exists(file_path):
         df = pd.read_excel(file_path, dtype=str)
-        df["Name_Lower"] = df["Name"].str.strip()  # Precompute stripped names
+        df["Name_Lower"] = df["Name"].str.strip()
         return df
     return None
 
@@ -27,19 +65,20 @@ if df is None:
         df["Name_Lower"] = df["Name"].str.strip()
         st.success("✅ File uploaded successfully! / Archivo cargado exitosamente!")
     else:
-        st.error("❌ No file uploaded. Please provide an Excel file. / No se cargó ningún archivo. Por favor, suba un archivo Excel.")
+        st.error("❌ No file uploaded. Please provide an Excel file.")
         st.stop()
 
-# Sidebar for Language Selection
+# Sidebar: Language Selection
 st.sidebar.title("🌍 Language / Idioma")
 selected_language = st.sidebar.radio("", ["English", "Español"])
 
 # Language dictionary
 languages = {
     "English": {
-        "title": "🔎 Provider Name Lookup ",
+        "title": "🔎 Name Lookup with Variations",
         "input_label": "Enter a name to check:",
         "button_label": "Find",
+        "clear_button": "🧹 Clear Search",
         "recent_searches": "Recent Searches",
         "download_results": "📥 Download Results",
         "exact_match": "✅ Exact Match Found",
@@ -50,9 +89,10 @@ languages = {
         "help_text": "Enter the exact name (case-sensitive, no extra spaces)",
     },
     "Español": {
-        "title": "🔎 Búsqueda de Proveedores ",
+        "title": "🔎 Búsqueda de Nombres con Variaciones",
         "input_label": "Ingrese un nombre para verificar:",
         "button_label": "Buscar",
+        "clear_button": "🧹 Limpiar Búsqueda",
         "recent_searches": "Búsquedas Recientes",
         "download_results": "📥 Descargar Resultados",
         "exact_match": "✅ Coincidencia Exacta Encontrada",
@@ -66,101 +106,84 @@ languages = {
 
 lang = languages[selected_language]
 
-# Title
-st.markdown(f"<h1 style='text-align: center;'>{lang['title']}</h1>", unsafe_allow_html=True)
+# Sidebar: Company Logo
+st.sidebar.image("https://your-company-logo-url.com/logo.png", use_column_width=True)
 
-# User Input + Find Button
-input_name = st.text_input(
-    lang["input_label"], 
-    "", 
-    help=lang["help_text"],  # Dynamic tooltip translation
-    placeholder="E.g., John A. Doe"
-).strip()
-find_button = st.button(lang["button_label"])
-
-# Initialize session state for recent searches
+# Sidebar: Recent Searches
+st.sidebar.subheader(f"🔍 {lang['recent_searches']}")
 if "search_history" not in st.session_state:
     st.session_state["search_history"] = []
 
-# Sidebar: Display recent searches
-st.sidebar.subheader(f"🔍 {lang['recent_searches']}")
-for name in st.session_state["search_history"][-5:]:  # Show last 5 searches
-    st.sidebar.write(f"🔹 {name}")
+if st.session_state["search_history"]:
+    for name in reversed(st.session_state["search_history"][-5:]):
+        st.sidebar.write(f"🔹 {name}")
+else:
+    st.sidebar.write("🔹 No recent searches")
 
-# Search logic
+# Title
+st.markdown(f"<h1 style='text-align: center;'>{lang['title']}</h1>", unsafe_allow_html=True)
+
+# Search Input with Tooltip
+input_name = st.text_input(
+    f"🔍 {lang['input_label']}",
+    "",
+    help=lang["help_text"],
+    placeholder="🔎 Type a name here..."
+).strip()
+
+# Buttons
+find_button = st.button(lang["button_label"])
+clear_button = st.button(lang["clear_button"])
+
+# Clear Search History
+if clear_button:
+    st.session_state["search_history"] = []
+    st.experimental_rerun()
+
+# Search Logic
 if find_button and input_name:
-    # Save search history
-    if input_name not in st.session_state["search_history"]:
-        st.session_state["search_history"].append(input_name)
+    with st.spinner("🔍 Searching... Please wait!"):
+        if input_name not in st.session_state["search_history"]:
+            st.session_state["search_history"].append(input_name)
 
-    # Check for exact matches (Case-sensitive, space-sensitive)
-    exact_matches = df[df["Name"] == input_name]  
+        # Exact Matches
+        exact_matches = df[df["Name"] == input_name]
+        if not exact_matches.empty:
+            st.success(f"{lang['exact_match']} ({len(exact_matches)} results found)")
+            with st.expander(f"📌 View Exact Matches ({len(exact_matches)})"):
+                for _, row in exact_matches.iterrows():
+                    st.write(f"🔹 **{row['Name']}** (ID: {row['ID']})")
 
-    if not exact_matches.empty:
-        st.success(f"{lang['exact_match']}:")
-        unique_variations = set()
-
-        for _, row in exact_matches.iterrows():
-            st.write(f"🔹 **{row['Name']}** (ID: {row['ID']})")
-
-            # Collect unique variations
-            variations = row[["Variation 1", "Variation 2", "Variation 3", "Variation 4", "Variation 5"]].dropna().tolist()
-            unique_variations.update(variations)
-
-        if unique_variations:
-            st.info(lang["variations_found"])
-            for var in unique_variations:
-                var_id = df[df["Name"] == var]["ID"].values[0] if var in df["Name"].values else "Unknown"
-                st.write(f"🔸 **{var}** (ID: {var_id})")
-
-    else:
-        # Perform fuzzy matching (case-insensitive)
-        try:
+        else:
             possible_matches = process.extract(input_name, df["Name"].dropna().tolist(), scorer=fuzz.ratio, limit=5)
-            matched_variations = set()
-
             if possible_matches:
-                st.warning(lang["not_found"])
-                
-                for name, score in possible_matches:
-                    if name != input_name:  # Avoid exact matches
+                st.warning(f"⚠️ {lang['not_found']} ({len(possible_matches)} similar names found)")
+                with st.expander(f"🔍 View Similar Matches ({len(possible_matches)})"):
+                    for name, score in possible_matches:
                         match_data = df[df["Name"] == name]
                         if not match_data.empty:
                             match_id = match_data["ID"].values[0]
                             st.write(f"🔹 **{name}** (ID: {match_id}) - {lang['status_not_sure']}: {score}")
 
-                            # Collect unique variations
-                            variations = match_data.iloc[0][["Variation 1", "Variation 2", "Variation 3", "Variation 4", "Variation 5"]].dropna().tolist()
-                            matched_variations.update(variations)
-
-                if matched_variations:
-                    st.info(lang["variations_found"])
-                    for var in matched_variations:
-                        var_id = df[df["Name"] == var]["ID"].values[0] if var in df["Name"].values else "Unknown"
-                        st.write(f"🔸 **{var}** (ID: {var_id})")
-
             else:
                 st.error(lang["does_not_exist"])
 
-        except Exception as e:
-            st.error(f"❌ Error during fuzzy matching: {e} / Error durante la búsqueda difusa: {e}")
-
-    # Convert search results to a DataFrame for download
+    # Convert results to DataFrame for download
     result_df = pd.DataFrame({
         "Searched Name": [input_name],
         "Exact Matches": [", ".join(exact_matches["Name"].tolist())] if not exact_matches.empty else [""],
         "Matched IDs": [", ".join(exact_matches["ID"].tolist())] if not exact_matches.empty else [""]
     })
 
-    # Create a downloadable Excel file
     buffer = io.BytesIO()
     result_df.to_excel(buffer, index=False)
     buffer.seek(0)
 
-    # Provide a download button
+    # Download Button
     st.download_button(
         label=lang["download_results"],
         data=buffer,
         file_name="Search_Results.xlsx",
-        mime="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
+        mime="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+        help="Click to download search results as an Excel file"
     )
