@@ -75,6 +75,13 @@ h1 {
     color: #FFFFFF !important; /* White text */
     border: none;
 }
+
+/* 🔹 Darker Warning Message (⚠️ No Exact Match, but Similar Names Found) */
+div[data-testid="stNotification"] {
+    background-color: #E6E6E6 !important; /* Darker gray background */
+    color: #222222 !important; /* Darker text */
+    font-weight: bold;
+}
 </style>
 """, unsafe_allow_html=True)
 
