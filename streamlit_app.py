@@ -187,8 +187,8 @@ input_name = st.text_input(
 ).strip()
 
 # Buttons
-find_button = st.button(lang["button_label"], key="find_button")  # ✅ Unique key
-clear_button = st.button(lang["clear_button"], key="clear_button")  # ✅ Unique key
+find_button = st.button(lang["button_label"])
+clear_button = st.button(lang["clear_button"])
 
 # Clear Search History
 if clear_button:
