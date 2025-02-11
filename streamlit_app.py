@@ -52,13 +52,14 @@ h1 {
 }
 
 .past-search {
-    background-color: #B22222 !important; /* Red background */
+    background-color: #333333 !important; /* Dark background */
     color: #FFFFFF !important; /* White text */
     padding: 8px;
     border-radius: 5px;
     margin-bottom: 5px;
     font-weight: bold;
     text-align: center;
+    border: 1px solid #FFFFFF; /* White border for contrast */
 }
 
 /* 🔹 Buttons Styling */
