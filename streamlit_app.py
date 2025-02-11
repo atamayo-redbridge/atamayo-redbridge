@@ -143,6 +143,14 @@ if df is None:
 st.sidebar.title("🌍 Language / Idioma")
 selected_language = st.sidebar.radio("", ["English", "Español"])
 
+# 🔍 Display Past Searches (Under Language Selection in Sidebar)
+if "search_history" in st.session_state and st.session_state["search_history"]:
+    st.sidebar.markdown("### 🔍 Past Searches")
+
+    # Show last 5 searches (Adjust as needed)
+    for search in st.session_state["search_history"][-5:][::-1]:
+        st.sidebar.write(f"🔹 {search}")  # ✅ Show in sidebar
+
 # Language dictionary
 languages = {
     "English": {
