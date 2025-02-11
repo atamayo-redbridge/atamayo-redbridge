@@ -37,7 +37,7 @@ selected_language = st.sidebar.radio("", ["English", "Español"])
 # Language dictionary
 languages = {
     "English": {
-        "title": "🔎 Name Lookup with Variations",
+        "title": "Provider Name Lookup",
         "input_label": "Enter a name to check:",
         "button_label": "Find",
         "recent_searches": "Recent Searches",
@@ -50,7 +50,7 @@ languages = {
         "help_text": "Enter the exact name (case-sensitive, no extra spaces)",
     },
     "Español": {
-        "title": "🔎 Búsqueda de Nombres con Variaciones",
+        "title": "Búsqueda de Proveedores",
         "input_label": "Ingrese un nombre para verificar:",
         "button_label": "Buscar",
         "recent_searches": "Búsquedas Recientes",
