@@ -139,17 +139,22 @@ if df is None:
         st.error("❌ No file uploaded. Please provide an Excel file.")
         st.stop()
 
-# Sidebar: Language Selection
-st.sidebar.title("🌍 Language / Idioma")
-selected_language = st.sidebar.radio("", ["English", "Español"])
+# Create two columns for layout
+col1, col2 = st.columns([1, 3])  # 1:3 ratio for space distribution
 
-# 🔍 Display Past Searches (Under Language Selection in Sidebar)
-if "search_history" in st.session_state and st.session_state["search_history"]:
-    st.sidebar.markdown("### 🔍 Past Searches")
+# 🌍 Move Language Selector to Left Side
+with col1:
+    st.markdown("### 🌍 Language / Idioma")
+    selected_language = st.radio("", ["English", "Español"])
 
-    # Show last 5 searches (Adjust as needed)
-    for search in st.session_state["search_history"][-5:][::-1]:
-        st.sidebar.write(f"🔹 {search}")  # ✅ Show in sidebar
+# 🔍 Move Past Searches Below Language Selector
+with col1:
+    if "search_history" in st.session_state and st.session_state["search_history"]:
+        st.markdown("### 🔍 Past Searches")
+        
+        # Show last 5 searches
+        for search in st.session_state["search_history"][-5:][::-1]:
+            st.write(f"🔹 {search}"
 
 # Language dictionary
 languages = {
