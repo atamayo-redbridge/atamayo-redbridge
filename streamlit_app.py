@@ -22,33 +22,14 @@ h1 {
     margin-bottom: 20px;
 }
 
-/* 🔹 Search Bar Styling */
-.stTextInput>div>div>input {
-    background-color: #FFFFFF !important; /* White background */
-    color: #000000 !important; /* Black text */
-    border-radius: 5px;
-    border: 1px solid #B22222; /* Red border */
-    padding: 10px;
-    font-size: 16px;
-}
-
-/* 🔹 Darken the Placeholder Text */
-.stTextInput>div>div>input::placeholder {
-    color: #555555 !important; /* Dark gray placeholder text */
-    opacity: 1;
-}
-
-/* 🔹 Sidebar Styling */
-.css-1d391kg {
-    background-color: #FFFFFF !important; /* White sidebar */
-    border-right: 1px solid #B22222; /* Red border */
-}
-
-/* 🔹 Sidebar Title ("Language / Idioma") - Keeping It White */
-.stSidebar h1, .stSidebar h2, .stSidebar h3 {
-    color: #FFFFFF !important; /* White text for better visibility */
-    font-size: 18px;
-    font-weight: bold;
+/* 🔹 Sidebar Style for Left Panel */
+.left-panel {
+    text-align: left;
+    background-color: #FFFFFF;
+    padding: 20px;
+    border-radius: 10px;
+    box-shadow: 2px 2px 10px rgba(0, 0, 0, 0.1);
+    width: 250px;
 }
 
 /* 🔹 Buttons Styling */
@@ -64,51 +45,6 @@ h1 {
 /* 🔹 Button Hover Effects */
 .stButton>button:hover {
     background-color: #8B1A1A !important;
-}
-
-/* 🔹 Download Button (FORCE Background & Visibility) */
-div[data-testid="stDownloadButton"] button {
-    border-radius: 5px !important;
-    font-size: 16px !important;
-    padding: 10px 20px !important;
-    background-color: #B22222 !important; /* Redbridge Red */
-    color: #FFFFFF !important; /* White text */
-    font-weight: bold !important;
-    border: none !important;
-    box-shadow: 2px 2px 5px rgba(0, 0, 0, 0.2) !important;
-}
-
-/* 🔹 Download Button Hover Effect */
-div[data-testid="stDownloadButton"] button:hover {
-    background-color: #8B1A1A !important; /* Darker Red */
-}
-
-/* 🔹 ✅ Success Message (Green Background, Black Text) */
-div[data-testid="stNotification"], div[data-testid="stAlert-success"] {
-    background-color: #D4EDDA !important; /* Light green background */
-    color: #000000 !important; /* Black text */
-    font-weight: bold;
-}
-
-/* 🔹 ⚠️ Warning Message (Yellow Background, Black Text) */
-div[data-testid="stNotification"], div[data-testid="stAlert-warning"] {
-    background-color: #FFF3CD !important; /* Light yellow background */
-    color: #000000 !important; /* Black text */
-    font-weight: bold;
-}
-
-/* 🔹 ❌ Error Message (Red Background, Black Text) */
-div[data-testid="stNotification"], div[data-testid="stAlert-error"] {
-    background-color: #F8D7DA !important; /* Light red background */
-    color: #000000 !important; /* Black text */
-    font-weight: bold;
-}
-
-/* 🔹 FORCE Streamlit Default Alerts to Keep Their Backgrounds */
-div[role="alert"] {
-    background-color: inherit !important; /* Keep original background */
-    color: #000000 !important; /* Ensure black text */
-    font-weight: bold;
 }
 </style>
 """, unsafe_allow_html=True)
@@ -139,22 +75,31 @@ if df is None:
         st.error("❌ No file uploaded. Please provide an Excel file.")
         st.stop()
 
-# Create two columns for layout
+# Create a layout with two columns
 col1, col2 = st.columns([1, 3])  # 1:3 ratio for space distribution
 
-# 🌍 Move Language Selector to Left Side
+# Left Column: 🌍 Language Selector & Past Searches
 with col1:
+    st.markdown('<div class="left-panel">', unsafe_allow_html=True)
+    
+    # 🌍 Language Selection
     st.markdown("### 🌍 Language / Idioma")
     selected_language = st.radio("", ["English", "Español"])
 
-# 🔍 Move Past Searches Below Language Selector
-with col1:
+    # 🔍 Past Searches (moved here)
     if "search_history" in st.session_state and st.session_state["search_history"]:
         st.markdown("### 🔍 Past Searches")
         
         # Show last 5 searches
         for search in st.session_state["search_history"][-5:][::-1]:
-            st.write(f"🔹 {search}"
+            st.write(f"🔹 {search}")
+
+        # Option to Clear Search History
+        if st.button("🗑️ Clear Search History"):
+            st.session_state["search_history"] = []
+            st.rerun()
+    
+    st.markdown('</div>', unsafe_allow_html=True)
 
 # Language dictionary
 languages = {
@@ -188,86 +133,68 @@ languages = {
 
 lang = languages[selected_language]
 
-# Title
-st.markdown(f"<h1>{lang['title']}</h1>", unsafe_allow_html=True)
+# Right Column: 🔎 Search Box & Results
+with col2:
+    # Title
+    st.markdown(f"<h1>{lang['title']}</h1>", unsafe_allow_html=True)
 
-# Search Input with Dynamic Placeholder
-input_name = st.text_input(
-    "",
-    "",
-    help=lang["help_text"],
-    placeholder=lang["placeholder"]
-).strip()
+    # Search Input with Dynamic Placeholder
+    input_name = st.text_input(
+        "",
+        "",
+        help=lang["help_text"],
+        placeholder=lang["placeholder"]
+    ).strip()
 
-# Buttons
-find_button = st.button(lang["button_label"])
-clear_button = st.button(lang["clear_button"])
+    # Buttons
+    find_button = st.button(lang["button_label"])
+    clear_button = st.button(lang["clear_button"])
 
-# Display Past Searches (Show Last 5 Searches)
-if "search_history" in st.session_state and st.session_state["search_history"]:
-    st.markdown("### 🔍 Past Searches")
-    
-    # Show last 5 searches (Adjust as needed)
-    for search in st.session_state["search_history"][-5:][::-1]:
-        st.write(f"🔹 {search}")
-
-    # Option to Clear Search History
-    if st.button("🗑️ Clear Search History"):
+    # Clear Search History
+    if clear_button:
         st.session_state["search_history"] = []
         st.rerun()
 
-# Clear Search History
-if clear_button:
-    st.session_state["search_history"] = []
-    st.rerun()
+    # Search Logic
+    if find_button and input_name:
+        with st.spinner("🔍 Searching... Please wait!"):
+            if "search_history" not in st.session_state:
+                st.session_state["search_history"] = []
+            if input_name not in st.session_state["search_history"]:
+                st.session_state["search_history"].append(input_name)
 
-# Search Logic
-if find_button and input_name:
-    with st.spinner("🔍 Searching... Please wait!"):
-        if "search_history" not in st.session_state:
-            st.session_state["search_history"] = []
-        if input_name not in st.session_state["search_history"]:
-            st.session_state["search_history"].append(input_name)
-
-        # Exact Matches
-        exact_matches = df[df["Name"] == input_name]
-        if not exact_matches.empty:
-            st.success(f"{lang['exact_match']} ({len(exact_matches)} results found)")
-            with st.expander(f"📌 View Exact Matches ({len(exact_matches)})"):
-                for _, row in exact_matches.iterrows():
-                    st.write(f"🔹 **{row['Name']}** (ID: {row['ID']})")
-
-        else:
-            possible_matches = process.extract(input_name, df["Name"].dropna().tolist(), scorer=fuzz.ratio, limit=5)
-            if possible_matches:
-                st.warning(f" {lang['not_found']} ({len(possible_matches)} {'similar names found' if selected_language == 'English' else 'nombres similares encontrados'})")
-                
-                with st.expander(f"🔍 {'View Similar Matches' if selected_language == 'English' else 'Ver Nombres Similares'} ({len(possible_matches)})"):
-                    for name, score in possible_matches:
-                        match_data = df[df["Name"] == name]
-                        if not match_data.empty:
-                            match_id = match_data["ID"].values[0]
-                            st.write(f"🔹 **{name}** (ID: {match_id})")
+            # Exact Matches
+            exact_matches = df[df["Name"] == input_name]
+            if not exact_matches.empty:
+                st.success(f"{lang['exact_match']} ({len(exact_matches)} results found)")
+                with st.expander(f"📌 View Exact Matches ({len(exact_matches)})"):
+                    for _, row in exact_matches.iterrows():
+                        st.write(f"🔹 **{row['Name']}** (ID: {row['ID']})")
 
             else:
-                st.error(lang["does_not_exist"])
+                possible_matches = process.extract(input_name, df["Name"].dropna().tolist(), scorer=fuzz.ratio, limit=5)
+                if possible_matches:
+                    st.warning(f" {lang['not_found']} ({len(possible_matches)} {'similar names found' if selected_language == 'English' else 'nombres similares encontrados'})")
+                    
+                    with st.expander(f"🔍 {'View Similar Matches' if selected_language == 'English' else 'Ver Nombres Similares'} ({len(possible_matches)})"):
+                        for name, score in possible_matches:
+                            match_data = df[df["Name"] == name]
+                            if not match_data.empty:
+                                match_id = match_data["ID"].values[0]
+                                st.write(f"🔹 **{name}** (ID: {match_id})")
 
-    # Convert results to DataFrame for download
-    result_df = pd.DataFrame({
-        "Searched Name": [input_name],
-        "Exact Matches": [", ".join(exact_matches["Name"].tolist())] if not exact_matches.empty else [""],
-        "Matched IDs": [", ".join(exact_matches["ID"].tolist())] if not exact_matches.empty else [""]
-    })
+                else:
+                    st.error(lang["does_not_exist"])
 
+    # 📥 Download Button for Results
     buffer = io.BytesIO()
+    result_df = pd.DataFrame({"Searched Name": [input_name]})
     result_df.to_excel(buffer, index=False)
     buffer.seek(0)
 
-    # Download Button
     st.download_button(
         label=lang["download_results"],
         data=buffer,
         file_name="Search_Results.xlsx",
-        mime="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
-        help="Click to download search results as an Excel file"
+        mime="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
     )
