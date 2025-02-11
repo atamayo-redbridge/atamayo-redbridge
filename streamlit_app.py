@@ -46,7 +46,6 @@ languages = {
         "not_found": "⚠️ No Exact Match, but Similar Names Found:",
         "does_not_exist": "❌ Name Does Not Exist in the database.",
         "variations_found": "🟡 Unique Variations Found:",
-        "status_not_sure": "❓ Status: Not Sure",
         "help_text": "Enter the exact name (case-sensitive, no extra spaces)",
     },
     "Español": {
@@ -59,7 +58,6 @@ languages = {
         "not_found": "⚠️ No hay coincidencia exacta, pero encontramos nombres similares:",
         "does_not_exist": "❌ El nombre no existe en la base de datos.",
         "variations_found": "🟡 Variaciones Únicas Encontradas:",
-        "status_not_sure": "❓ Estado: No Seguro",
         "help_text": "Ingrese el nombre exacto (distingue mayúsculas y espacios)",
     },
 }
@@ -127,7 +125,7 @@ if find_button and input_name:
                         match_data = df[df["Name"] == name]
                         if not match_data.empty:
                             match_id = match_data["ID"].values[0]
-                            st.write(f"🔹 **{name}** (ID: {match_id}) - {lang['status_not_sure']}: {score}")
+                            st.write(f"🔹 **{name}** (ID: {match_id})")  # ❌ Removed "Status: Not Sure"
 
                             # Collect unique variations
                             variations = match_data.iloc[0][["Variation 1", "Variation 2", "Variation 3", "Variation 4", "Variation 5"]].dropna().tolist()
