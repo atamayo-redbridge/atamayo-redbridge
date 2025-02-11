@@ -213,6 +213,23 @@ with col1:
 
 # Right Column: Main Content (Search Input, Buttons, Results)
 with col2:
+ 
+# Search Input
+input_name = st.text_input(
+    "",
+    "",
+    help=lang["help_text"],
+    placeholder=lang["placeholder"]
+).strip()
+
+# Buttons
+find_button = st.button(lang["button_label"])
+clear_button = st.button(lang["clear_button"])
+
+# Clear Search History
+if clear_button:
+    st.session_state["search_history"] = []
+    st.rerun() 
 
 # Search Logic
 if find_button and input_name:
