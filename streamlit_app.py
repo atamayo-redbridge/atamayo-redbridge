@@ -198,19 +198,6 @@ input_name = st.text_input(
 find_button = st.button(lang["button_label"])
 clear_button = st.button(lang["clear_button"])
 
-# Display Past Searches (Show Last 5 Searches)
-if "search_history" in st.session_state and st.session_state["search_history"]:
-    st.markdown("### 🔍 Past Searches")
-    
-    # Show last 5 searches (Adjust as needed)
-    for search in st.session_state["search_history"][-5:][::-1]:
-        st.write(f"🔹 {search}")
-
-    # Option to Clear Search History
-    if st.button("🗑️ Clear Search History"):
-        st.session_state["search_history"] = []
-        st.rerun()
-
 # Clear Search History
 if clear_button:
     st.session_state["search_history"] = []
