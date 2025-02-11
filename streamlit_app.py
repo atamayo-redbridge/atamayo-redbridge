@@ -38,7 +38,7 @@ selected_language = st.sidebar.radio("", ["English", "Español"])
 languages = {
     "English": {
         "title": "Provider Name Lookup",
-        "input_label": "Enter a name to check:",
+        "input_label": "",
         "button_label": "Find",
         "recent_searches": "Recent Searches",
         "download_results": "📥 Download Results",
@@ -50,7 +50,7 @@ languages = {
     },
     "Español": {
         "title": "Búsqueda de Proveedores",
-        "input_label": "Introduzca un nombre para verificar:",
+        "input_label": "",
         "button_label": "Buscar",
         "recent_searches": "Búsquedas Recientes",
         "download_results": "📥 Descargar Resultados",
