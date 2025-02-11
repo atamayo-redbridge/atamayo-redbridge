@@ -211,56 +211,55 @@ with col1:
             st.session_state["search_history"] = []
             st.rerun()
 
-# Right Column: Main Content (Search Input, Buttons, Results)
+# **Right Column: Everything must be inside this `with col2:` block**
 with col2:
- 
-# Search Input
-input_name = st.text_input(
-    "",
-    "",
-    help=lang["help_text"],
-    placeholder=lang["placeholder"]
-).strip()
+    # Search Input
+    input_name = st.text_input(
+        "",
+        "",
+        help=lang["help_text"],
+        placeholder=lang["placeholder"]
+    ).strip()
 
-# Buttons
-find_button = st.button(lang["button_label"])
-clear_button = st.button(lang["clear_button"])
+    # Buttons
+    find_button = st.button(lang["button_label"])
+    clear_button = st.button(lang["clear_button"])
 
-# Clear Search History
-if clear_button:
-    st.session_state["search_history"] = []
-    st.rerun() 
+    # Clear Search History
+    if clear_button:
+        st.session_state["search_history"] = []
+        st.rerun()
 
-# Search Logic
-if find_button and input_name:
-    with st.spinner("🔍 Searching... Please wait!"):
-        if "search_history" not in st.session_state:
-            st.session_state["search_history"] = []
-        if input_name not in st.session_state["search_history"]:
-            st.session_state["search_history"].append(input_name)
+    # Search Logic (Keep it inside `col2`)
+    if find_button and input_name:
+        with st.spinner("🔍 Searching... Please wait!"):
+            if "search_history" not in st.session_state:
+                st.session_state["search_history"] = []
+            if input_name not in st.session_state["search_history"]:
+                st.session_state["search_history"].append(input_name)
 
-        # Exact Matches
-        exact_matches = df[df["Name"] == input_name]
-        if not exact_matches.empty:
-            st.success(f"{lang['exact_match']} ({len(exact_matches)} results found)")
-            with st.expander(f"📌 View Exact Matches ({len(exact_matches)})"):
-                for _, row in exact_matches.iterrows():
-                    st.write(f"🔹 **{row['Name']}** (ID: {row['ID']})")
-
-        else:
-            possible_matches = process.extract(input_name, df["Name"].dropna().tolist(), scorer=fuzz.ratio, limit=5)
-            if possible_matches:
-                st.warning(f" {lang['not_found']} ({len(possible_matches)} {'similar names found' if selected_language == 'English' else 'nombres similares encontrados'})")
-                
-                with st.expander(f"🔍 {'View Similar Matches' if selected_language == 'English' else 'Ver Nombres Similares'} ({len(possible_matches)})"):
-                    for name, score in possible_matches:
-                        match_data = df[df["Name"] == name]
-                        if not match_data.empty:
-                            match_id = match_data["ID"].values[0]
-                            st.write(f"🔹 **{name}** (ID: {match_id})")
+            # Exact Matches
+            exact_matches = df[df["Name"] == input_name]
+            if not exact_matches.empty:
+                st.success(f"{lang['exact_match']} ({len(exact_matches)} results found)")
+                with st.expander(f"📌 View Exact Matches ({len(exact_matches)})"):
+                    for _, row in exact_matches.iterrows():
+                        st.write(f"🔹 **{row['Name']}** (ID: {row['ID']})")
 
             else:
-                st.error(lang["does_not_exist"])
+                possible_matches = process.extract(input_name, df["Name"].dropna().tolist(), scorer=fuzz.ratio, limit=5)
+                if possible_matches:
+                    st.warning(f" {lang['not_found']} ({len(possible_matches)} {'similar names found' if selected_language == 'English' else 'nombres similares encontrados'})")
+                    
+                    with st.expander(f"🔍 {'View Similar Matches' if selected_language == 'English' else 'Ver Nombres Similares'} ({len(possible_matches)})"):
+                        for name, score in possible_matches:
+                            match_data = df[df["Name"] == name]
+                            if not match_data.empty:
+                                match_id = match_data["ID"].values[0]
+                                st.write(f"🔹 **{name}** (ID: {match_id})")
+
+                else:
+                    st.error(lang["does_not_exist"])
 
     # Convert results to DataFrame for download
     result_df = pd.DataFrame({
