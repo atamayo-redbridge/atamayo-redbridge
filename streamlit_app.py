@@ -24,101 +24,22 @@ h1 {
 
 /* 🔹 Search Bar Styling */
 .stTextInput>div>div>input {
-    background-color: #FFFFFF !important; /* White background */
-    color: #000000 !important; /* Black text */
+    background-color: #FFFFFF !important;
+    color: #000000 !important;
     border-radius: 5px;
-    border: 1px solid #B22222; /* Red border */
+    border: 1px solid #B22222;
     padding: 10px;
     font-size: 16px;
 }
 
-/* 🔹 Darken the Placeholder Text */
-.stTextInput>div>div>input::placeholder {
-    color: #555555 !important; /* Dark gray placeholder text */
-    opacity: 1;
-}
-
-/* 🔹 Sidebar Styling */
-.css-1d391kg {
-    background-color: #FFFFFF !important; /* White sidebar */
-    border-right: 1px solid #B22222; /* Red border */
-}
-
-/* 🔹 Sidebar Title ("Language / Idioma") - Keeping It White */
-.stSidebar h1, .stSidebar h2, .stSidebar h3 {
-    color: #FFFFFF !important; /* White text for better visibility */
-    font-size: 18px;
-    font-weight: bold;
-}
-
-/* 🔹 Past Searches Styling (White Text) */
+/* 🔹 Past Searches Styling (White Background, Black Text, Red Border) */
 .past-search {
-    background-color: #FFFFFF !important; /* White background */
-    color: #000000 !important; /* Black text */
+    background-color: #FFFFFF !important;
+    color: #000000 !important;
     padding: 8px;
     border-radius: 5px;
     margin-bottom: 5px;
     border: 1px solid #B22222; /* Redbridge Red border */
-}
-
-/* 🔹 Buttons Styling */
-.stButton>button {
-    border-radius: 5px;
-    font-size: 16px;
-    padding: 10px 20px;
-    background-color: #B22222; /* Red primary button */
-    color: #FFFFFF;
-    border: none;
-}
-
-/* 🔹 Button Hover Effects */
-.stButton>button:hover {
-    background-color: #8B1A1A !important;
-}
-
-/* 🔹 Download Button (FORCE Background & Visibility) */
-div[data-testid="stDownloadButton"] button {
-    border-radius: 5px !important;
-    font-size: 16px !important;
-    padding: 10px 20px !important;
-    background-color: #B22222 !important; /* Redbridge Red */
-    color: #FFFFFF !important; /* White text */
-    font-weight: bold !important;
-    border: none !important;
-    box-shadow: 2px 2px 5px rgba(0, 0, 0, 0.2) !important;
-}
-
-/* 🔹 Download Button Hover Effect */
-div[data-testid="stDownloadButton"] button:hover {
-    background-color: #8B1A1A !important; /* Darker Red */
-}
-
-/* 🔹 ✅ Success Message (Green Background, Black Text) */
-div[data-testid="stNotification"], div[data-testid="stAlert-success"] {
-    background-color: #D4EDDA !important; /* Light green background */
-    color: #000000 !important; /* Black text */
-    font-weight: bold;
-}
-
-/* 🔹 ⚠️ Warning Message (Yellow Background, Black Text) */
-div[data-testid="stNotification"], div[data-testid="stAlert-warning"] {
-    background-color: #FFF3CD !important; /* Light yellow background */
-    color: #000000 !important; /* Black text */
-    font-weight: bold;
-}
-
-/* 🔹 ❌ Error Message (Red Background, Black Text) */
-div[data-testid="stNotification"], div[data-testid="stAlert-error"] {
-    background-color: #F8D7DA !important; /* Light red background */
-    color: #000000 !important; /* Black text */
-    font-weight: bold;
-}
-
-/* 🔹 FORCE Streamlit Default Alerts to Keep Their Backgrounds */
-div[role="alert"] {
-    background-color: inherit !important; /* Keep original background */
-    color: #000000 !important; /* Ensure black text */
-    font-weight: bold;
 }
 </style>
 """, unsafe_allow_html=True)
@@ -132,7 +53,7 @@ def load_data(file_path):
         return df
     return None
 
-# File path (update if necessary)
+# File path
 file_path = "data/Provider_Duplicates_Variations_Active.xlsx"
 df = load_data(file_path)
 
@@ -149,18 +70,25 @@ if df is None:
         st.error("❌ No file uploaded. Please provide an Excel file.")
         st.stop()
 
-# Sidebar: Language Selection
-st.sidebar.title("🌍 Language / Idioma")
-selected_language = st.sidebar.radio("", ["English", "Español"])
+# Create two columns for layout
+col1, col2 = st.columns([1, 3])  # 1:3 ratio for space distribution
 
-# 🔍 Move Past Searches Below Language Selector with White Styling
+# 🌍 Move Language Selector to Left Side
+with col1:
+    st.markdown("### 🌍 Language / Idioma")
+    selected_language = st.radio("", ["English", "Español"])
+
+# 🔍 Move Past Searches Below Language Selector with Better Contrast
 with col1:
     if "search_history" in st.session_state and st.session_state["search_history"]:
         st.markdown("### 🔍 Past Searches")
 
         # Show last 5 searches with styling
         for search in st.session_state["search_history"][-5:][::-1]:
-            st.markdown(f'<div class="past-search">🔹 {search}</div>', unsafe_allow_html=True)
+            st.markdown(
+                f'<div class="past-search">🔹 {search}</div>',
+                unsafe_allow_html=True
+            )
 
         # Option to Clear Search History
         if st.button("🗑️ Clear Search History"):
@@ -178,7 +106,6 @@ languages = {
         "exact_match": "✅ Exact Match Found",
         "not_found": "⚠️ No Exact Match, but Similar Names Found:",
         "does_not_exist": "❌ Name Does Not Exist in the database.",
-        "variations_found": "🟡 Unique Variations Found:",
         "help_text": "Enter the exact name (case-sensitive, no extra spaces)",
         "placeholder": "🔎 Type a name here..."
     },
@@ -191,7 +118,6 @@ languages = {
         "exact_match": "✅ Coincidencia Exacta Encontrada",
         "not_found": "⚠️ No hay coincidencia exacta, pero encontramos nombres similares:",
         "does_not_exist": "❌ El nombre no existe en la base de datos.",
-        "variations_found": "🟡 Variaciones Únicas Encontradas:",
         "help_text": "Ingrese el nombre exacto (distingue mayúsculas y espacios)",
         "placeholder": "🔎 Escriba un nombre aquí..."
     },
