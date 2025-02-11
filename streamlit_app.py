@@ -4,130 +4,17 @@ from fuzzywuzzy import fuzz, process
 import os
 import io
 
-# Custom CSS Styling for Redbridge Branding
-st.markdown("""
- <style>
-/* 🔹 Global App Styling */
-.stApp {
-    background-color: #F8F9FA; /* Light gray background */
-    font-family: Arial, sans-serif;
-    color: #333333;
-    padding: 20px;
-}
-
-/* 🔹 Title Styling */
-h1 {
-    color: #B22222; /* Redbridge brand color */
-    text-align: center;
-    margin-bottom: 20px;
-}
-
-/* 🔹 Search Bar Styling */
-.stTextInput>div>div>input {
-    background-color: #FFFFFF !important; /* White background */
-    color: #000000 !important; /* Black text */
-    border-radius: 5px;
-    border: 1px solid #B22222; /* Red border */
-    padding: 10px;
-    font-size: 16px;
-}
-
-/* 🔹 Darken the Placeholder Text */
-.stTextInput>div>div>input::placeholder {
-    color: #555555 !important; /* Dark gray placeholder text */
-    opacity: 1;
-}
-
-
-/* 🔹 Sidebar Title ("Language / Idioma") - Keeping It White */
-.stSidebar h1, .stSidebar h2, .stSidebar h3 {
-    color: #FFFFFF !important; /* White text for better visibility */
-    font-size: 18px;
-    font-weight: bold;
-}
-
-.past-search {
-    color: #FFFFFF !important; /* White text */
-    padding: 8px;
-    border-radius: 5px;
-    margin-bottom: 5px;
-    font-weight: bold;
-    text-align: center;
-}
-
-/* 🔹 Buttons Styling */
-.stButton>button {
-    border-radius: 5px;
-    font-size: 16px;
-    padding: 10px 20px;
-    background-color: #B22222; /* Red primary button */
-    color: #FFFFFF;
-    border: none;
-}
-
-/* 🔹 Button Hover Effects */
-.stButton>button:hover {
-    background-color: #8B1A1A !important;
-}
-
-/* 🔹 Download Button (FORCE Background & Visibility) */
-div[data-testid="stDownloadButton"] button {
-    border-radius: 5px !important;
-    font-size: 16px !important;
-    padding: 10px 20px !important;
-    background-color: #B22222 !important; /* Redbridge Red */
-    color: #FFFFFF !important; /* White text */
-    font-weight: bold !important;
-    border: none !important;
-    box-shadow: 2px 2px 5px rgba(0, 0, 0, 0.2) !important;
-}
-
-/* 🔹 Download Button Hover Effect */
-div[data-testid="stDownloadButton"] button:hover {
-    background-color: #8B1A1A !important; /* Darker Red */
-}
-
-/* 🔹 ✅ Success Message (Green Background, Black Text) */
-div[data-testid="stNotification"], div[data-testid="stAlert-success"] {
-    background-color: #D4EDDA !important; /* Light green background */
-    color: #000000 !important; /* Black text */
-    font-weight: bold;
-}
-
-/* 🔹 ⚠️ Warning Message (Yellow Background, Black Text) */
-div[data-testid="stNotification"], div[data-testid="stAlert-warning"] {
-    background-color: #FFF3CD !important; /* Light yellow background */
-    color: #000000 !important; /* Black text */
-    font-weight: bold;
-}
-
-/* 🔹 ❌ Error Message (Red Background, Black Text) */
-div[data-testid="stNotification"], div[data-testid="stAlert-error"] {
-    background-color: #F8D7DA !important; /* Light red background */
-    color: #000000 !important; /* Black text */
-    font-weight: bold;
-}
-
-/* 🔹 FORCE Streamlit Default Alerts to Keep Their Backgrounds */
-div[role="alert"] {
-    background-color: inherit !important; /* Keep original background */
-    color: #000000 !important; /* Ensure black text */
-    font-weight: bold;
-}
-</style>
-""", unsafe_allow_html=True)
-
 # Load Excel File
 @st.cache_data
 def load_data(file_path):
     if os.path.exists(file_path):
         df = pd.read_excel(file_path, dtype=str)
-        df["Name_Lower"] = df["Name"].str.strip()
+        df["Name_Lower"] = df["Name"].str.strip()  # Precompute stripped names
         return df
     return None
 
 # File path (update if necessary)
-file_path = "data/Provider_Duplicates_Variations_Active.xlsx"
+file_path = "Provider_Duplicates_Variations_Active.xlsx"
 df = load_data(file_path)
 
 # Ensure the file is loaded
@@ -140,120 +27,140 @@ if df is None:
         df["Name_Lower"] = df["Name"].str.strip()
         st.success("✅ File uploaded successfully! / Archivo cargado exitosamente!")
     else:
-        st.error("❌ No file uploaded. Please provide an Excel file.")
+        st.error("❌ No file uploaded. Please provide an Excel file. / No se cargó ningún archivo. Por favor, suba un archivo Excel.")
         st.stop()
 
-# Sidebar: Language Selection
+# Sidebar for Language Selection
 st.sidebar.title("🌍 Language / Idioma")
 selected_language = st.sidebar.radio("", ["English", "Español"])
-
-# 🔍 Display Past Searches (Under Language Selection in Sidebar)
-if "search_history" in st.session_state and st.session_state["search_history"]:
-    st.sidebar.markdown("### 🔍 Past Searches")
-
-    # Show last 5 searches (Adjust as needed)
-    for search in st.session_state["search_history"][-5:][::-1]:
-        st.sidebar.write(f"🔹 {search}")  # ✅ Show in sidebar
 
 # Language dictionary
 languages = {
     "English": {
-        "title": "Provider Name Lookup",
+        "title": "🔎 Name Lookup with Variations",
+        "input_label": "Enter a name to check:",
         "button_label": "Find",
-        "clear_button": "🧹 Clear Search",
         "recent_searches": "Recent Searches",
         "download_results": "📥 Download Results",
         "exact_match": "✅ Exact Match Found",
         "not_found": "⚠️ No Exact Match, but Similar Names Found:",
         "does_not_exist": "❌ Name Does Not Exist in the database.",
         "variations_found": "🟡 Unique Variations Found:",
+        "status_not_sure": "❓ Status: Not Sure",
         "help_text": "Enter the exact name (case-sensitive, no extra spaces)",
-        "placeholder": "🔎 Type a name here..."
     },
     "Español": {
-        "title": "Búsqueda de Proveedores",
+        "title": "🔎 Búsqueda de Nombres con Variaciones",
+        "input_label": "Ingrese un nombre para verificar:",
         "button_label": "Buscar",
-        "clear_button": "🧹 Limpiar Búsqueda",
         "recent_searches": "Búsquedas Recientes",
         "download_results": "📥 Descargar Resultados",
         "exact_match": "✅ Coincidencia Exacta Encontrada",
         "not_found": "⚠️ No hay coincidencia exacta, pero encontramos nombres similares:",
         "does_not_exist": "❌ El nombre no existe en la base de datos.",
         "variations_found": "🟡 Variaciones Únicas Encontradas:",
+        "status_not_sure": "❓ Estado: No Seguro",
         "help_text": "Ingrese el nombre exacto (distingue mayúsculas y espacios)",
-        "placeholder": "🔎 Escriba un nombre aquí..."
     },
 }
 
 lang = languages[selected_language]
 
 # Title
-st.markdown(f"<h1>{lang['title']}</h1>", unsafe_allow_html=True)
+st.markdown(f"<h1 style='text-align: center;'>{lang['title']}</h1>", unsafe_allow_html=True)
 
-# Search Input with Dynamic Placeholder
+# User Input + Find Button
 input_name = st.text_input(
-    "",
-    "",
-    help=lang["help_text"],
-    placeholder=lang["placeholder"]
+    lang["input_label"], 
+    "", 
+    help=lang["help_text"],  # Dynamic tooltip translation
+    placeholder="E.g., John A. Doe"
 ).strip()
-
-# Buttons
 find_button = st.button(lang["button_label"])
-clear_button = st.button(lang["clear_button"])
 
-# Clear Search History
-if clear_button:
+# Initialize session state for recent searches
+if "search_history" not in st.session_state:
     st.session_state["search_history"] = []
-    st.rerun()
 
-# Search Logic
+# Sidebar: Display recent searches
+st.sidebar.subheader(f"🔍 {lang['recent_searches']}")
+for name in st.session_state["search_history"][-5:]:  # Show last 5 searches
+    st.sidebar.write(f"🔹 {name}")
+
+# Search logic
 if find_button and input_name:
-    with st.spinner("🔍 Searching... Please wait!"):
-        if "search_history" not in st.session_state:
-            st.session_state["search_history"] = []
-        if input_name not in st.session_state["search_history"]:
-            st.session_state["search_history"].append(input_name)
+    # Save search history
+    if input_name not in st.session_state["search_history"]:
+        st.session_state["search_history"].append(input_name)
 
-        # Exact Matches
-        exact_matches = df[df["Name"] == input_name]
-        if not exact_matches.empty:
-            st.success(f"{lang['exact_match']} ({len(exact_matches)} results found)")
-            with st.expander(f"📌 View Exact Matches ({len(exact_matches)})"):
-                for _, row in exact_matches.iterrows():
-                    st.write(f"🔹 **{row['Name']}** (ID: {row['ID']})")
+    # Check for exact matches (Case-sensitive, space-sensitive)
+    exact_matches = df[df["Name"] == input_name]  
 
-        else:
+    if not exact_matches.empty:
+        st.success(f"{lang['exact_match']}:")
+        unique_variations = set()
+
+        for _, row in exact_matches.iterrows():
+            st.write(f"🔹 **{row['Name']}** (ID: {row['ID']})")
+
+            # Collect unique variations
+            variations = row[["Variation 1", "Variation 2", "Variation 3", "Variation 4", "Variation 5"]].dropna().tolist()
+            unique_variations.update(variations)
+
+        if unique_variations:
+            st.info(lang["variations_found"])
+            for var in unique_variations:
+                var_id = df[df["Name"] == var]["ID"].values[0] if var in df["Name"].values else "Unknown"
+                st.write(f"🔸 **{var}** (ID: {var_id})")
+
+    else:
+        # Perform fuzzy matching (case-insensitive)
+        try:
             possible_matches = process.extract(input_name, df["Name"].dropna().tolist(), scorer=fuzz.ratio, limit=5)
+            matched_variations = set()
+
             if possible_matches:
-                st.warning(f" {lang['not_found']} ({len(possible_matches)} {'similar names found' if selected_language == 'English' else 'nombres similares encontrados'})")
+                st.warning(lang["not_found"])
                 
-                with st.expander(f"🔍 {'View Similar Matches' if selected_language == 'English' else 'Ver Nombres Similares'} ({len(possible_matches)})"):
-                    for name, score in possible_matches:
+                for name, score in possible_matches:
+                    if name != input_name:  # Avoid exact matches
                         match_data = df[df["Name"] == name]
                         if not match_data.empty:
                             match_id = match_data["ID"].values[0]
-                            st.write(f"🔹 **{name}** (ID: {match_id})")
+                            st.write(f"🔹 **{name}** (ID: {match_id}) - {lang['status_not_sure']}: {score}")
+
+                            # Collect unique variations
+                            variations = match_data.iloc[0][["Variation 1", "Variation 2", "Variation 3", "Variation 4", "Variation 5"]].dropna().tolist()
+                            matched_variations.update(variations)
+
+                if matched_variations:
+                    st.info(lang["variations_found"])
+                    for var in matched_variations:
+                        var_id = df[df["Name"] == var]["ID"].values[0] if var in df["Name"].values else "Unknown"
+                        st.write(f"🔸 **{var}** (ID: {var_id})")
 
             else:
                 st.error(lang["does_not_exist"])
 
-    # Convert results to DataFrame for download
+        except Exception as e:
+            st.error(f"❌ Error during fuzzy matching: {e} / Error durante la búsqueda difusa: {e}")
+
+    # Convert search results to a DataFrame for download
     result_df = pd.DataFrame({
         "Searched Name": [input_name],
         "Exact Matches": [", ".join(exact_matches["Name"].tolist())] if not exact_matches.empty else [""],
         "Matched IDs": [", ".join(exact_matches["ID"].tolist())] if not exact_matches.empty else [""]
     })
 
+    # Create a downloadable Excel file
     buffer = io.BytesIO()
     result_df.to_excel(buffer, index=False)
     buffer.seek(0)
 
-    # Download Button
+    # Provide a download button
     st.download_button(
         label=lang["download_results"],
         data=buffer,
         file_name="Search_Results.xlsx",
-        mime="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
-        help="Click to download search results as an Excel file"
+        mime="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
     )
