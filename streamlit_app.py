@@ -72,7 +72,7 @@ input_name = st.text_input(
     lang["input_label"], 
     "", 
     help=lang["help_text"],  # Dynamic tooltip translation
-    placeholder="E.g., John A. Doe"
+    placeholder="Enter a name to check..."
 ).strip()
 find_button = st.button(lang["button_label"])
 
