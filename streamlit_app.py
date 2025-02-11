@@ -51,6 +51,16 @@ h1 {
     font-weight: bold;
 }
 
+/* 🔹 Past Searches Styling (White Text) */
+.past-search {
+    background-color: #FFFFFF !important; /* White background */
+    color: #000000 !important; /* Black text */
+    padding: 8px;
+    border-radius: 5px;
+    margin-bottom: 5px;
+    border: 1px solid #B22222; /* Redbridge Red border */
+}
+
 /* 🔹 Buttons Styling */
 .stButton>button {
     border-radius: 5px;
