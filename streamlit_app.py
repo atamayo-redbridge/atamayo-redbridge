@@ -66,14 +66,21 @@ h1 {
     background-color: #8B1A1A !important;
 }
 
-/* 🔹 Download Button */
+/* 🔹 Download Button (Ensuring Proper Background & Visibility) */
 .stDownloadButton>button {
     border-radius: 5px;
     font-size: 16px;
     padding: 10px 20px;
-    background-color: #B22222;
+    background-color: #B22222 !important; /* Redbridge Red */
     color: #FFFFFF !important; /* White text */
+    font-weight: bold;
     border: none;
+    box-shadow: 2px 2px 5px rgba(0, 0, 0, 0.2);
+}
+
+/* 🔹 Download Button Hover Effect */
+.stDownloadButton>button:hover {
+    background-color: #8B1A1A !important; /* Darker Red */
 }
 
 /* 🔹 ✅ Success Message (Green Background, Black Text) */
