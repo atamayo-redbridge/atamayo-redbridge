@@ -51,12 +51,14 @@ h1 {
     font-weight: bold;
 }
 
-/* 🔹 Past Searches Styling (White Text) */
 .past-search {
+    background-color: #B22222 !important; /* Red background */
     color: #FFFFFF !important; /* White text */
     padding: 8px;
     border-radius: 5px;
     margin-bottom: 5px;
+    font-weight: bold;
+    text-align: center;
 }
 
 /* 🔹 Buttons Styling */
