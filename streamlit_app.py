@@ -38,11 +38,6 @@ h1 {
     opacity: 1;
 }
 
-/* 🔹 Sidebar Styling */
-.css-1d391kg {
-    background-color: #FFFFFF !important; /* White sidebar */
-    border-right: 1px solid #B22222; /* Red border */
-}
 
 /* 🔹 Sidebar Title ("Language / Idioma") - Keeping It White */
 .stSidebar h1, .stSidebar h2, .stSidebar h3 {
