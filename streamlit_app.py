@@ -22,33 +22,10 @@ h1 {
     margin-bottom: 20px;
 }
 
-/* 🔹 Search Bar Styling */
-.stTextInput>div>div>input {
-    background-color: #FFFFFF !important; /* White background */
-    color: #000000 !important; /* Black text */
-    border-radius: 5px;
-    border: 1px solid #B22222; /* Red border */
-    padding: 10px;
-    font-size: 16px;
-}
-
-/* 🔹 Darken the Placeholder Text */
-.stTextInput>div>div>input::placeholder {
-    color: #555555 !important; /* Dark gray placeholder text */
-    opacity: 1;
-}
-
 /* 🔹 Sidebar Styling */
 .css-1d391kg {
     background-color: #FFFFFF !important; /* White sidebar */
     border-right: 1px solid #B22222; /* Red border */
-}
-
-/* 🔹 Sidebar Title ("Language / Idioma") - Keeping It White */
-.stSidebar h1, .stSidebar h2, .stSidebar h3 {
-    color: #FFFFFF !important; /* White text for better visibility */
-    font-size: 18px;
-    font-weight: bold;
 }
 
 /* 🔹 Buttons Styling */
@@ -66,50 +43,6 @@ h1 {
     background-color: #8B1A1A !important;
 }
 
-/* 🔹 Download Button (FORCE Background & Visibility) */
-div[data-testid="stDownloadButton"] button {
-    border-radius: 5px !important;
-    font-size: 16px !important;
-    padding: 10px 20px !important;
-    background-color: #B22222 !important; /* Redbridge Red */
-    color: #FFFFFF !important; /* White text */
-    font-weight: bold !important;
-    border: none !important;
-    box-shadow: 2px 2px 5px rgba(0, 0, 0, 0.2) !important;
-}
-
-/* 🔹 Download Button Hover Effect */
-div[data-testid="stDownloadButton"] button:hover {
-    background-color: #8B1A1A !important; /* Darker Red */
-}
-
-/* 🔹 ✅ Success Message (Green Background, Black Text) */
-div[data-testid="stNotification"], div[data-testid="stAlert-success"] {
-    background-color: #D4EDDA !important; /* Light green background */
-    color: #000000 !important; /* Black text */
-    font-weight: bold;
-}
-
-/* 🔹 ⚠️ Warning Message (Yellow Background, Black Text) */
-div[data-testid="stNotification"], div[data-testid="stAlert-warning"] {
-    background-color: #FFF3CD !important; /* Light yellow background */
-    color: #000000 !important; /* Black text */
-    font-weight: bold;
-}
-
-/* 🔹 ❌ Error Message (Red Background, Black Text) */
-div[data-testid="stNotification"], div[data-testid="stAlert-error"] {
-    background-color: #F8D7DA !important; /* Light red background */
-    color: #000000 !important; /* Black text */
-    font-weight: bold;
-}
-
-/* 🔹 FORCE Streamlit Default Alerts to Keep Their Backgrounds */
-div[role="alert"] {
-    background-color: inherit !important; /* Keep original background */
-    color: #000000 !important; /* Ensure black text */
-    font-weight: bold;
-}
 </style>
 """, unsafe_allow_html=True)
 
@@ -139,17 +72,27 @@ if df is None:
         st.error("❌ No file uploaded. Please provide an Excel file.")
         st.stop()
 
-# Sidebar: Language Selection
-st.sidebar.title("🌍 Language / Idioma")
-selected_language = st.sidebar.radio("", ["English", "Español"])
+# Create two columns for layout
+col1, col2 = st.columns([1, 3])  # 1:3 ratio for space distribution
 
-# 🔍 Display Past Searches (Under Language Selection in Sidebar)
-if "search_history" in st.session_state and st.session_state["search_history"]:
-    st.sidebar.markdown("### 🔍 Past Searches")
+# 🌍 Move Language Selector to Left Side
+with col1:
+    st.markdown("### 🌍 Language / Idioma")
+    selected_language = st.radio("", ["English", "Español"])
 
-    # Show last 5 searches (Adjust as needed)
-    for search in st.session_state["search_history"][-5:][::-1]:
-        st.sidebar.write(f"🔹 {search}")  # ✅ Show in sidebar
+# 🔍 Move Past Searches Below Language Selector
+with col1:
+    if "search_history" in st.session_state and st.session_state["search_history"]:
+        st.markdown("### 🔍 Past Searches")
+        
+        # Show last 5 searches
+        for search in st.session_state["search_history"][-5:][::-1]:
+            st.write(f"🔹 {search}")
+
+        # Option to Clear Search History
+        if st.button("🗑️ Clear Search History"):
+            st.session_state["search_history"] = []
+            st.rerun()
 
 # Language dictionary
 languages = {
@@ -218,38 +161,3 @@ if find_button and input_name:
             with st.expander(f"📌 View Exact Matches ({len(exact_matches)})"):
                 for _, row in exact_matches.iterrows():
                     st.write(f"🔹 **{row['Name']}** (ID: {row['ID']})")
-
-        else:
-            possible_matches = process.extract(input_name, df["Name"].dropna().tolist(), scorer=fuzz.ratio, limit=5)
-            if possible_matches:
-                st.warning(f" {lang['not_found']} ({len(possible_matches)} {'similar names found' if selected_language == 'English' else 'nombres similares encontrados'})")
-                
-                with st.expander(f"🔍 {'View Similar Matches' if selected_language == 'English' else 'Ver Nombres Similares'} ({len(possible_matches)})"):
-                    for name, score in possible_matches:
-                        match_data = df[df["Name"] == name]
-                        if not match_data.empty:
-                            match_id = match_data["ID"].values[0]
-                            st.write(f"🔹 **{name}** (ID: {match_id})")
-
-            else:
-                st.error(lang["does_not_exist"])
-
-    # Convert results to DataFrame for download
-    result_df = pd.DataFrame({
-        "Searched Name": [input_name],
-        "Exact Matches": [", ".join(exact_matches["Name"].tolist())] if not exact_matches.empty else [""],
-        "Matched IDs": [", ".join(exact_matches["ID"].tolist())] if not exact_matches.empty else [""]
-    })
-
-    buffer = io.BytesIO()
-    result_df.to_excel(buffer, index=False)
-    buffer.seek(0)
-
-    # Download Button
-    st.download_button(
-        label=lang["download_results"],
-        data=buffer,
-        file_name="Search_Results.xlsx",
-        mime="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
-        help="Click to download search results as an Excel file"
-    )
