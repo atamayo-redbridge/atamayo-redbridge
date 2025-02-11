@@ -44,13 +44,6 @@ h1 {
     border-right: 1px solid #B22222; /* Red border */
 }
 
-/* 🔹 Sidebar Title ("Language / Idioma") - Keeping It White */
-.stSidebar h1, .stSidebar h2, .stSidebar h3 {
-    color: #FFFFFF !important; /* White text for better visibility */
-    font-size: 18px;
-    font-weight: bold;
-}
-
 /* 🔹 Buttons Styling */
 .stButton>button {
     border-radius: 5px;
@@ -66,7 +59,7 @@ h1 {
     background-color: #8B1A1A !important;
 }
 
-/* 🔹 Download Button (FORCE Background & Visibility) */
+/* 🔹 Download Button */
 div[data-testid="stDownloadButton"] button {
     border-radius: 5px !important;
     font-size: 16px !important;
@@ -76,11 +69,6 @@ div[data-testid="stDownloadButton"] button {
     font-weight: bold !important;
     border: none !important;
     box-shadow: 2px 2px 5px rgba(0, 0, 0, 0.2) !important;
-}
-
-/* 🔹 Download Button Hover Effect */
-div[data-testid="stDownloadButton"] button:hover {
-    background-color: #8B1A1A !important; /* Darker Red */
 }
 
 /* 🔹 ✅ Success Message (Green Background, Black Text) */
@@ -101,13 +89,6 @@ div[data-testid="stNotification"], div[data-testid="stAlert-warning"] {
 div[data-testid="stNotification"], div[data-testid="stAlert-error"] {
     background-color: #F8D7DA !important; /* Light red background */
     color: #000000 !important; /* Black text */
-    font-weight: bold;
-}
-
-/* 🔹 FORCE Streamlit Default Alerts to Keep Their Backgrounds */
-div[role="alert"] {
-    background-color: inherit !important; /* Keep original background */
-    color: #000000 !important; /* Ensure black text */
     font-weight: bold;
 }
 </style>
@@ -155,7 +136,6 @@ languages = {
         "not_found": "⚠️ No Exact Match, but Similar Names Found:",
         "does_not_exist": "❌ Name Does Not Exist in the database.",
         "variations_found": "🟡 Unique Variations Found:",
-        "help_text": "Enter the exact name (case-sensitive, no extra spaces)",
         "placeholder": "🔎 Type a name here..."
     },
     "Español": {
@@ -168,59 +148,37 @@ languages = {
         "not_found": "⚠️ No hay coincidencia exacta, pero encontramos nombres similares:",
         "does_not_exist": "❌ El nombre no existe en la base de datos.",
         "variations_found": "🟡 Variaciones Únicas Encontradas:",
-        "help_text": "Ingrese el nombre exacto (distingue mayúsculas y espacios)",
         "placeholder": "🔎 Escriba un nombre aquí..."
     },
 }
 
 lang = languages[selected_language]
 
-# Title
-st.markdown(f"<h1>{lang['title']}</h1>", unsafe_allow_html=True)
+# Create a layout with two columns
+col1, col2 = st.columns([1, 3])  # Adjust width ratio
 
-# Search Input with Dynamic Placeholder
-input_name = st.text_input(
-    "",
-    "",
-    help=lang["help_text"],
-    placeholder=lang["placeholder"]
-).strip()
-
-# Buttons
-find_button = st.button(lang["button_label"], key="find_button")  # ✅ Unique key
-clear_button = st.button(lang["clear_button"], key="clear_button")  # ✅ Unique key
-
-# Clear Search History
-if clear_button:
-    st.session_state["search_history"] = []
-    st.rerun()
- 
-# Create two columns layout
-col1, col2 = st.columns([1, 3])  # Adjust the ratio if needed (1 = past searches, 3 = main content)
-
-# Left Column: Display Past Searches
+# Left Column: Past Searches
 with col1:
     if "search_history" in st.session_state and st.session_state["search_history"]:
-        st.markdown("### 🔍 Past Searches")
-        with st.expander("📜 View Past Searches"):
-            for search in st.session_state["search_history"][-5:][::-1]:
-                st.write(f"🔹 {search}")
-
-        # Option to Clear Search History
+        st.markdown(f"### 🔍 {lang['recent_searches']}")
+        for search in st.session_state["search_history"][-5:][::-1]:
+            st.write(f"🔹 {search}")
+        
         if st.button("🗑️ Clear Search History"):
             st.session_state["search_history"] = []
             st.rerun()
 
-# **Right Column: Everything must be inside this `with col2:` block**
+# Right Column: Search Input and Results
 with col2:
-    # Search Input
+    # Title
+    st.markdown(f"<h1>{lang['title']}</h1>", unsafe_allow_html=True)
+
+    # Search Bar
     input_name = st.text_input(
-    "",
-    "",
-    help=lang["help_text"],
-    placeholder=lang["placeholder"],
-    key="search_box"  # ✅ Assign a unique key
-).strip()
+        "",
+        "",
+        placeholder=lang["placeholder"]
+    ).strip()
 
     # Buttons
     find_button = st.button(lang["button_label"])
@@ -231,53 +189,23 @@ with col2:
         st.session_state["search_history"] = []
         st.rerun()
 
-    # Search Logic (Keep it inside `col2`)
+    # Search Logic
     if find_button and input_name:
-        with st.spinner("🔍 Searching... Please wait!"):
-            if "search_history" not in st.session_state:
-                st.session_state["search_history"] = []
-            if input_name not in st.session_state["search_history"]:
-                st.session_state["search_history"].append(input_name)
+        if "search_history" not in st.session_state:
+            st.session_state["search_history"] = []
+        if input_name not in st.session_state["search_history"]:
+            st.session_state["search_history"].append(input_name)
 
-            # Exact Matches
-            exact_matches = df[df["Name"] == input_name]
-            if not exact_matches.empty:
-                st.success(f"{lang['exact_match']} ({len(exact_matches)} results found)")
-                with st.expander(f"📌 View Exact Matches ({len(exact_matches)})"):
-                    for _, row in exact_matches.iterrows():
-                        st.write(f"🔹 **{row['Name']}** (ID: {row['ID']})")
-
-            else:
-                possible_matches = process.extract(input_name, df["Name"].dropna().tolist(), scorer=fuzz.ratio, limit=5)
-                if possible_matches:
-                    st.warning(f" {lang['not_found']} ({len(possible_matches)} {'similar names found' if selected_language == 'English' else 'nombres similares encontrados'})")
-                    
-                    with st.expander(f"🔍 {'View Similar Matches' if selected_language == 'English' else 'Ver Nombres Similares'} ({len(possible_matches)})"):
-                        for name, score in possible_matches:
-                            match_data = df[df["Name"] == name]
-                            if not match_data.empty:
-                                match_id = match_data["ID"].values[0]
-                                st.write(f"🔹 **{name}** (ID: {match_id})")
-
-                else:
-                    st.error(lang["does_not_exist"])
-
-    # Convert results to DataFrame for download
-    result_df = pd.DataFrame({
-        "Searched Name": [input_name],
-        "Exact Matches": [", ".join(exact_matches["Name"].tolist())] if not exact_matches.empty else [""],
-        "Matched IDs": [", ".join(exact_matches["ID"].tolist())] if not exact_matches.empty else [""]
-    })
-
-    buffer = io.BytesIO()
-    result_df.to_excel(buffer, index=False)
-    buffer.seek(0)
+        exact_matches = df[df["Name"] == input_name]
+        if not exact_matches.empty:
+            st.success(f"{lang['exact_match']} ({len(exact_matches)} results found)")
+        else:
+            st.warning(f"{lang['not_found']}")
 
     # Download Button
     st.download_button(
         label=lang["download_results"],
-        data=buffer,
+        data="",
         file_name="Search_Results.xlsx",
-        mime="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
-        help="Click to download search results as an Excel file"
+        mime="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
     )
