@@ -215,11 +215,12 @@ with col1:
 with col2:
     # Search Input
     input_name = st.text_input(
-        "",
-        "",
-        help=lang["help_text"],
-        placeholder=lang["placeholder"]
-    ).strip()
+    "",
+    "",
+    help=lang["help_text"],
+    placeholder=lang["placeholder"],
+    key="search_box"  # ✅ Assign a unique key
+).strip()
 
     # Buttons
     find_button = st.button(lang["button_label"])
