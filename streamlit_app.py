@@ -195,9 +195,23 @@ if clear_button:
     st.session_state["search_history"] = []
     st.rerun()
  
- # Display Past Searches (Show Last 5 Searches)
-if "search_history" in st.session_state and st.session_state["search_history"]:
-    st.markdown("### 🔍 Past Searches")
+# 🔹 Layout: Two Columns (Left: Past Searches, Right: Search Bar)
+col1, col2 = st.columns([1, 3])
+
+# Left Column: Past Searches
+with col1:
+    if "search_history" in st.session_state and st.session_state["search_history"]:
+        st.markdown(f"### 🔍 {lang['recent_searches']}", unsafe_allow_html=True)
+        with st.expander("📜 View Past Searches"):
+            for search in st.session_state["search_history"][-5:][::-1]:
+                st.write(f"🔹 {search}")
+
+        if st.button("🗑️ Clear Search History"):
+            st.session_state["search_history"] = []
+            st.rerun()
+
+# Right Column: Search and Results
+with col2:
     
     # Show last 5 searches (Adjust as needed)
     for search in st.session_state["search_history"][-5:][::-1]:
