@@ -195,18 +195,24 @@ if clear_button:
     st.session_state["search_history"] = []
     st.rerun()
  
- # Display Past Searches (Show Last 5 Searches)
-if "search_history" in st.session_state and st.session_state["search_history"]:
-    st.markdown("### 🔍 Past Searches")
-    
-    # Show last 5 searches (Adjust as needed)
-    for search in st.session_state["search_history"][-5:][::-1]:
-        st.write(f"🔹 {search}")
+# Create two columns layout
+col1, col2 = st.columns([1, 3])  # Adjust the ratio if needed (1 = past searches, 3 = main content)
 
-    # Option to Clear Search History
-    if st.button("🗑️ Clear Search History"):
-        st.session_state["search_history"] = []
-        st.rerun()
+# Left Column: Display Past Searches
+with col1:
+    if "search_history" in st.session_state and st.session_state["search_history"]:
+        st.markdown("### 🔍 Past Searches")
+        with st.expander("📜 View Past Searches"):
+            for search in st.session_state["search_history"][-5:][::-1]:
+                st.write(f"🔹 {search}")
+
+        # Option to Clear Search History
+        if st.button("🗑️ Clear Search History"):
+            st.session_state["search_history"] = []
+            st.rerun()
+
+# Right Column: Main Content (Search Input, Buttons, Results)
+with col2:
 
 # Search Logic
 if find_button and input_name:
